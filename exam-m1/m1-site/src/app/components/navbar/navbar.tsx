@@ -17,7 +17,7 @@ const Navbar = () => {
         <button onClick={() => setIsOpen(!isOpen)} className="md:hidden">
           {isOpen ? (
             <Image 
-              src="/images/licorne.jpg" // Chemin de votre image de fermeture
+              src='/images/salameche.png' // Chemin de votre image de fermeture de menu
               alt="Close Menu"
               width={30} // Largeur de l'image
               height={30} // Hauteur de l'image
@@ -25,7 +25,7 @@ const Navbar = () => {
             />
           ) : (
             <Image 
-              src="/images/licorne.jpg" // Chemin de votre image de menu
+              src="/images/salameche.png" // Chemin de votre image de menu
               alt="Open Menu"
               width={30} // Largeur de l'image
               height={30} // Hauteur de l'image

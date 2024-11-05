@@ -1,14 +1,16 @@
+"use client";
 import AuthorCard from "../../components/authorCard";
 
 
 const AuthorsPage = () => {
-    const exampleBook = {
+    const exampleAuthor = {
         author_name: "Nom de l'Auteur",
     };
+    
     return (
         <>
-            <section>
-                <AuthorCard author={exampleBook} />
+            <section className="p-4 mt-5 flex justify-center">
+                <AuthorCard author={exampleAuthor} />
             </section>
         </>
     );

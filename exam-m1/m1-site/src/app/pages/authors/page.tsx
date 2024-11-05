@@ -1,6 +1,5 @@
 "use client";
-import AuthorCard from "../../components/authorCard";
-
+import AuthorCard from "../../components/authors/authorCard";
 
 const AuthorsPage = () => {
     const exampleAuthor = {

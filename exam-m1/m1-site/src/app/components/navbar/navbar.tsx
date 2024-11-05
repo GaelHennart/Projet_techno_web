@@ -42,10 +42,10 @@ const Navbar = () => {
           <NvabarItem title="Accueil" link="/" />
           </li>
           <li className="py-1">
-            <NvabarItem title="Liste des livres" link="#aboutmyself" />
+            <NvabarItem title="Liste des livres" link="/pages/books" />
           </li>
           <li className="py-1">
-            <NvabarItem title="Liste des auteurs" link="#contact" />
+            <NvabarItem title="Liste des auteurs" link="/pages/authors" />
           </li>
         </ul>
       )}

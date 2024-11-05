@@ -4,7 +4,7 @@ const BooksPage = () => {
     const exampleBook = {
         coverUrl: "URL_DE_L_IMAGE_DU_LIVRE",
         title: "Titre du Livre",
-        author: "Nom de l'Auteur",
+        author_name: "Nom de l'Auteur",
         publishDate: "Date de Parution",
         rating: 4.5
     };

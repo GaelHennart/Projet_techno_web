@@ -1,10 +1,16 @@
+import AuthorCard from "../../components/authorCard";
 
 
 const AuthorsPage = () => {
+    const exampleBook = {
+        author_name: "Nom de l'Auteur",
+    };
     return (
-        <section>
-            <h1>bonjour</h1>
-        </section>
+        <>
+            <section>
+                <AuthorCard author={exampleBook} />
+            </section>
+        </>
     );
 };
 

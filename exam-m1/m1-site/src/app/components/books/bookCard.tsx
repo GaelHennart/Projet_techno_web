@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 
 interface Book {
-  image_livre: string;
+  id: string;  // Assure-toi d'avoir un identifiant unique pour chaque livre
+  book_image: string;
   title: string;
-  author_name: string;
+  author: string;
   publishDate: string;
   rating: number;
 }
@@ -19,22 +20,34 @@ const colors = [
 ];
 
 const BookCard: React.FC<{ book: Book }> = ({ book }) => {
-  // Générer un index aléatoire
-  const randomColor = colors[Math.floor(Math.random() * colors.length)];
+  const [color, setColor] = useState('');
+
+  useEffect(() => {
+    // Vérifie si une couleur est déjà stockée pour ce livre
+    const storedColor = localStorage.getItem(`bookColor-${book.id}`);
+    if (storedColor) {
+      setColor(storedColor);
+    } else {
+      // Sinon, génère une nouvelle couleur aléatoire et la stocke
+      const newColor = colors[Math.floor(Math.random() * colors.length)];
+      localStorage.setItem(`bookColor-${book.id}`, newColor);
+      setColor(newColor);
+    }
+  }, [book.id]);
 
   return (
-    <div className={`mt-0 rounded-lg shadow-md p-4 w-[215px] h-[330px] ${randomColor}`}>
+    <div className={`mt-0 rounded-lg shadow-lg p-4 w-[215px] h-[330px] hover:scale-105 transition-transform duration-300 ease-in-out hover:shadow-xl ${color}`}>
       <div className="relative w-full h-40 overflow-hidden mb-4">
         <Image
-          src={book.image_livre}
+          src={book.book_image}
           alt={book.title}
           layout="fill"
           objectFit="cover"
           className="rounded-md"
         />
       </div>
-      <h3 className="text-xl font-bold text-gray-800" style={{ fontFamily: 'Montserrat, sans-serif' }} >{book.title}</h3>
-      <p className="text-sm text-gray-600" style={{ fontFamily: 'Pacifico, cursive' }}>Par {book.author_name}</p>
+      <h3 className="text-xl font-bold text-gray-800" style={{ fontFamily: 'Montserrat, sans-serif' }}>{book.title}</h3>
+      <p className="text-sm text-gray-600" style={{ fontFamily: 'Pacifico, cursive' }}>Par {book.author}</p>
       <p className="text-sm text-gray-600" style={{ fontFamily: 'Pacifico, cursive' }}>Publié le : {book.publishDate}</p>
       <div className="flex items-center mt-2" style={{ fontFamily: 'Roboto Condensed, sans-serif' }}>
         <span className="text-yellow-500 font-bold text-lg mr-1">{book.rating}</span>

@@ -37,7 +37,7 @@ const Navbar = () => {
 
       {/* Menu mobile */}
       {isOpen && (
-        <ul className="md:hidden absolute top-[110%] left-0 right-0 w-[125%] bg-white border-2 border-black rounded-t-[25px] rounded-b-[25px] p-4 z-50 shadow-lg">
+        <ul className="md:hidden absolute top-[110%] left-0 right-0 w-[125%] bg-white border-2 border-[#3a86ff] rounded-t-[25px] rounded-b-[25px] p-4 z-50 shadow-lg">
           <li className="py-1">
           <NavbarItem title="Accueil" link="/" />
           </li>

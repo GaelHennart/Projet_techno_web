@@ -5,7 +5,7 @@ import Typed from 'typed.js';
 const HomePage = () => {
   useEffect(() => {
     const options = {
-      strings: ['sur notre librairie', 'les lecteurs'],
+      strings: ['sur notre librairie', 'les lecteurs', 'les auteurs'],
       typeSpeed: 50,
       backSpeed: 50,
       loop: true,
@@ -25,7 +25,7 @@ const HomePage = () => {
     <>
       <section>
         <div className="flex-grow flex flex-col items-start text-left px-10">
-          <h1 className="text-[#3a86ff] text-2xl sm:text-3xl lg:text-5xl font-bold">
+          <h1 className="text-[#3a86ff] text-2xl sm:text-3xl lg:text-5xl font-bold mt-48 ml-[375px]">
             Bienvenue <span className="auto-typing text-[#ff006e]"></span>
           </h1>
         </div>

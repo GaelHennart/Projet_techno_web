@@ -14,7 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="flex min-h-screen flex-col bg-black w-full mx-auto px-4 md:px-12 py-2 md:py-4">
+      <body className="flex min-h-screen flex-col bg-[#F5F5F5] w-full mx-auto px-4 md:px-12 py-2 md:py-4">
         <Navbar />
         <main className="flex-grow p-4">
           {children} {/* Affiche le contenu de la page ici */}

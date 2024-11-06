@@ -1,5 +1,5 @@
 // app/Components/AuthorItem.tsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface Author {
   id: number;
@@ -8,15 +8,43 @@ interface Author {
   bookCount: number;
   averageRating: number;
 }
+// Définir une liste de couleurs
+const colors = [
+  'bg-red-200',
+  'bg-blue-200',
+  'bg-green-200',
+  'bg-yellow-200',
+  'bg-purple-200',
+];
 
-interface AuthorItemProps {
-  author: Author;
-}
 
-const AuthorItem: React.FC<AuthorItemProps> = ({ author }) => {
+const AuthorItem: React.FC<{ author: Author }> = ({ author }) => {
+  const [color, setColor] = useState('');
+
+  useEffect(() => {
+    // Vérifie si une couleur est déjà stockée pour ce livre
+    const storedColor = localStorage.getItem(`bookColor-${author.id}`);
+    if (storedColor) {
+      setColor(storedColor);
+    } else {
+      // Sinon, génère une nouvelle couleur aléatoire et la stocke
+      const newColor = colors[Math.floor(Math.random() * colors.length)];
+      localStorage.setItem(`bookColor-${author.id}`, newColor);
+      setColor(newColor);
+    }
+  }, [author.id]);
   return (
-    <div className="bg-gray-800 rounded-lg p-4">
-      <img src={author.photo} alt={author.name} className="w-full h-auto rounded-md" />
+    <div
+      className={`mt-0 rounded-lg shadow-lg p-4 w-[215px] h-[330px] hover:scale-105 transition-transform duration-300 ease-in-out hover:shadow-xl ${color}`}
+    >
+      {/* Container for image with fixed width and height */}
+      <div className="w-full h-[200px] overflow-hidden rounded-md">
+        <img
+          src={author.photo}
+          alt={author.name}
+          className="w-full h-full object-cover" // Ensures image covers the container
+        />
+      </div>
       <h2 className="text-white text-xl mt-2">{author.name}</h2>
       <p className="text-gray-400">Livres : {author.bookCount}</p>
       <p className="text-gray-400">Note moyenne : {author.averageRating}</p>

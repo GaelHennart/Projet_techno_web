@@ -11,8 +11,8 @@ const Navbar = () => {
       <div className="flex items-center justify-end">
         <ul className="hidden md:flex gap-6 lg:gap-10 text-lg">
           <NavbarItem title="Accueil" link="/" />
-          <NavbarItem title="Liste des livres" link="/books" />
-          <NavbarItem title="Liste des auteurs" link="/authors" />
+          <NavbarItem title="Liste des livres" link="/pages/books" />
+          <NavbarItem title="Liste des auteurs" link="/pages/authors" />
         </ul>
       </div>
 
@@ -23,10 +23,10 @@ const Navbar = () => {
           <NavbarItem title="Accueil" link="/" />
           </li>
           <li className="py-1">
-            <NavbarItem title="Liste des livres" link="/books" />
+            <NavbarItem title="Liste des livres" link="/pages" />
           </li>
           <li className="py-1">
-            <NavbarItem title="Liste des auteurs" link="/authors" />
+            <NavbarItem title="Liste des auteurs" link="/pages" />
           </li>
         </ul>
       )}

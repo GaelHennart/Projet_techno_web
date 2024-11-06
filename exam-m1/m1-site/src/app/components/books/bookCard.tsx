@@ -33,10 +33,10 @@ const BookCard: React.FC<{ book: Book }> = ({ book }) => {
           className="rounded-md"
         />
       </div>
-      <h3 className="text-xl font-bold text-gray-800">{book.title}</h3>
-      <p className="text-sm text-gray-600">Par {book.author_name}</p>
-      <p className="text-sm text-gray-600">Publié le : {book.publishDate}</p>
-      <div className="flex items-center mt-2">
+      <h3 className="text-xl font-bold text-gray-800" style={{ fontFamily: 'Montserrat, sans-serif' }} >{book.title}</h3>
+      <p className="text-sm text-gray-600" style={{ fontFamily: 'Pacifico, cursive' }}>Par {book.author_name}</p>
+      <p className="text-sm text-gray-600" style={{ fontFamily: 'Pacifico, cursive' }}>Publié le : {book.publishDate}</p>
+      <div className="flex items-center mt-2" style={{ fontFamily: 'Roboto Condensed, sans-serif' }}>
         <span className="text-yellow-500 font-bold text-lg mr-1">{book.rating}</span>
         <span className="text-sm text-gray-500">/ 5</span>
       </div>

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import BookCard from "../../components/books/bookCard";
 import SearchBar from "../../components/searchBar";
-import BookSorter from "../../components/books/BookSorter";
+import BookSorter from "../../components/books/bookSorter";
 import BookModal from "../../components/books/bookModal";
 
 interface Book {

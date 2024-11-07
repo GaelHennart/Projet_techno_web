@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 
 interface Book {
   id: string;  // Assure-toi d'avoir un identifiant unique pour chaque livre
@@ -35,8 +37,11 @@ const BookCard: React.FC<{ book: Book }> = ({ book }) => {
     }
   }, [book.id]);
 
+  const pathname = usePathname(); // Récupération du chemin actuel
+  const isBookPage = pathname.includes('/books/id'); // Utilisation correcte de pathname
+
   return (
-    <div className={`mt-0 rounded-lg shadow-lg p-4 w-[215px] h-[330px] hover:scale-105 transition-transform duration-300 ease-in-out hover:shadow-xl ${color}`}>
+    <Link key={book.id} href={`/books/${book.id}`} className={`mt-0 rounded-lg shadow-lg p-4 w-[215px] h-[330px] hover:scale-105 transition-transform duration-300 ease-in-out hover:shadow-xl ${color}`}>
       <div className="relative w-full h-40 overflow-hidden mb-4">
         <Image
           src={book.book_image}
@@ -53,7 +58,7 @@ const BookCard: React.FC<{ book: Book }> = ({ book }) => {
         <span className="text-yellow-500 font-bold text-lg mr-1">{book.rating}</span>
         <span className="text-sm text-gray-500">/ 5</span>
       </div>
-    </div>
+    </Link>
   );
 };
 

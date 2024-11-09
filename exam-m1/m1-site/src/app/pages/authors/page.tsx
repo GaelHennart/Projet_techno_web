@@ -1,9 +1,8 @@
 "use client";
 import React, { useState } from 'react';
-import AuthorItem from '../../Components/AuthorItem';
+import AuthorItem from '../../Components/AuthorCard';
 import SearchBar from '../../Components/SearchBar';
 import AddAuthorModal from '../../Components/AuthorModale';
-import Link from 'next/link'; // Importation du composant Link
 
 interface Author {
   id: number;
@@ -78,19 +77,17 @@ const AuthorsPage: React.FC = () => {
       </button>
 
       {/* Liste des auteurs */}
-
-        <div className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 justify-items-center">
+      <div className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 justify-items-center">
         {filteredAuthors.map((author) => (
-        <AuthorItem key={author.id} author={author} />
+          <AuthorItem key={author.id} author={author} />
         ))}
-</div>
-
+      </div>
 
       {/* Modale d'ajout d'auteur */}
       <AddAuthorModal
         isOpen={isModalOpen}
         onClose={toggleModal}
-        onAddAuthor={handleAddAuthor}
+        onAddAuthor={(newAuthor) => handleAddAuthor({ ...newAuthor, averageRating: 0 })}
       />
     </>
   );

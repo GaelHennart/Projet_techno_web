@@ -1,5 +1,5 @@
 import React from 'react';
-import AuthorItem from './AuthorItem';
+import AuthorItem from './AuthorCard';
 
 // Définir les props pour le composant AuthorList
 interface Author {

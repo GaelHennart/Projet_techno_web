@@ -12,15 +12,15 @@ import {
   @Entity('reviews')
   export class ReviewEntity extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
-    id: string;
+    id: number;
   
-    @Column({ type: 'int', width: 1 })
-    rating: number;
-  
-    @Column({ type: 'text', nullable: true })
-    comment: string;
-  
-    @CreateDateColumn({ name: 'created_at' })
+    @Column({ name: 'reviews_description', type: 'varchar' })
+    reviews_description: string;
+
+    @Column({ name: 'mark', type: 'float' })
+    mark: number;
+    
+    @Column({ name: 'created_at', type: 'timestamp' })
     createdAt: Date;
   
     @ManyToOne(() => BookEntity, (book) => book.reviews, { nullable: false, onDelete: 'CASCADE' })

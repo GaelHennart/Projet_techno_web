@@ -1,4 +1,4 @@
-import { AuthorEntity } from '../entities/author.entity';
+import { AuthorEntity } from '../database/entities/author.entity';
 
 export class AuthorPresenter {
   static present(author: AuthorEntity) {

@@ -22,6 +22,9 @@ import {
   
     @Column({ name: 'year_published', type: 'int' })
     yearPublished: number;
+
+    @Column({ name: 'average', type: 'float' })
+    average: number;
   
     @ManyToOne(() => AuthorEntity, (author) => author.books, { nullable: false })
     @JoinColumn({ name: 'author_id' })

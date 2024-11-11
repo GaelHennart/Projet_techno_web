@@ -1,31 +1,35 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { AuthorRepository } from './author.repository';
-import { CreateAuthorDto } from './author.dto';
-import { UpdateAuthorDto } from './author.dto';
+import { AuthorsRepository } from './author.repository';
+import { CreateAuthorDto, UpdateAuthorDto } from './author.dto';
+import { AuthorPresenter } from './author.presenter';
 
 @Injectable()
 export class AuthorsService {
-  constructor(private readonly authorRepository: AuthorRepository) {}
+  constructor(private readonly authorsRepository: AuthorsRepository) {}
 
-  async findAll() {
-    return await this.authorRepository.findAll();
+  public async findAll() {
+    const authors = await this.authorsRepository.findAll();
+    return authors.map(AuthorPresenter.present);
   }
 
-  async findOne(id: string) {
-    const author = await this.authorRepository.findById(id);
+  public async findOne(id: string) {
+    const author = await this.authorsRepository.findOne(id);
     if (!author) throw new NotFoundException('Author not found');
-    return author;
+    return AuthorPresenter.present(author);
   }
 
-  async create(createAuthorDto: CreateAuthorDto) {
-    return await this.authorRepository.createAuthor(createAuthorDto);
+  public async create(createAuthorDto: CreateAuthorDto) {
+    const author = await this.authorsRepository.create(createAuthorDto);
+    return AuthorPresenter.present(author);
   }
 
-  async update(id: string, updateAuthorDto: UpdateAuthorDto) {
-    return await this.authorRepository.updateAuthor(id, updateAuthorDto);
+  public async update(id: string, updateAuthorDto: UpdateAuthorDto) {
+    const author = await this.authorsRepository.update(id, updateAuthorDto);
+    if (!author) throw new NotFoundException('Author not found');
+    return AuthorPresenter.present(author);
   }
 
-  async remove(id: string) {
-    return await this.authorRepository.deleteAuthor(id);
+  public async remove(id: string) {
+    return this.authorsRepository.remove(id);
   }
 }

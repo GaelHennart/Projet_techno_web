@@ -1,36 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AuthorEntity } from '../entities/author.entity';
-import { CreateAuthorDto } from './author.dto';
-import { UpdateAuthorDto } from './author.dto';
+import { Repository } from 'typeorm';
+import { AuthorEntity } from '../database/entities/author.entity';
+import { CreateAuthorDto, UpdateAuthorDto } from './author.dto';
 
 @Injectable()
-export class AuthorRepository {
+export class AuthorsRepository {
   constructor(
     @InjectRepository(AuthorEntity)
-    private readonly repository: Repository<AuthorEntity>,
+    private readonly authorRepo: Repository<AuthorEntity>,
   ) {}
 
   async findAll(): Promise<AuthorEntity[]> {
-    return this.repository.find({ relations: ['books'] });
+    return this.authorRepo.find({ relations: ['books'] });
   }
 
-  async findById(id: string): Promise<AuthorEntity | undefined> {
-    return this.repository.findOne({ where: { id }, relations: ['books'] });
+  async findOne(id: string): Promise<AuthorEntity | null> {
+    return this.authorRepo.findOne({ where: { id }, relations: ['books'] });
   }
 
-  async createAuthor(createAuthorDto: CreateAuthorDto): Promise<AuthorEntity> {
-    const author = this.repository.create(createAuthorDto);
-    return this.repository.save(author);
+  async create(createAuthorDto: CreateAuthorDto): Promise<AuthorEntity> {
+    const author = this.authorRepo.create(createAuthorDto);
+    return this.authorRepo.save(author);
   }
 
-  async updateAuthor(id: string, updateAuthorDto: UpdateAuthorDto): Promise<AuthorEntity> {
-    await this.repository.update(id, updateAuthorDto);
-    return this.findById(id);
+  async update(id: string, updateAuthorDto: UpdateAuthorDto): Promise<AuthorEntity> {
+    await this.authorRepo.update(id, updateAuthorDto);
+    return this.findOne(id);
   }
 
-  async deleteAuthor(id: string): Promise<void> {
-    await this.repository.delete(id);
+  async remove(id: string): Promise<void> {
+    await this.authorRepo.delete(id);
   }
 }

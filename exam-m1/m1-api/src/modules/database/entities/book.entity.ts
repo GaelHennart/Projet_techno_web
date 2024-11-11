@@ -10,12 +10,12 @@ import {
   import { AuthorEntity } from './author.entity';
   import { ReviewEntity } from './review.entity';
   
-  export type BookId = string & { __brand: 'Book' };
+
   
   @Entity('books')
   export class BookEntity extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
-    id: BookId;
+    id: string;
   
     @Column({ name: 'title', type: 'varchar' })
     title: string;

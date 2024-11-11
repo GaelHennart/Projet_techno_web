@@ -12,7 +12,7 @@ import {
   @Entity('reviews')
   export class ReviewEntity extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
-    id: number;
+    id: string;
   
     @Column({ name: 'reviews_description', type: 'varchar' })
     reviews_description: string;

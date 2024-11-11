@@ -1,12 +1,29 @@
+import { IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
+
 export class CreateAuthorDto {
-    firstName: string;
-    lastName: string;
-    biography?: string;
-  }
+  @IsNotEmpty()
+  @IsString()
+  firstName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  lastName: string;
+
+  @IsOptional()
+  @IsUrl()
+  imageUrl?: string;
+}
 
 export class UpdateAuthorDto {
-    firstName?: string;
-    lastName?: string;
-    biography?: string;
-  }
-  
+  @IsOptional()
+  @IsString()
+  firstName?: string;
+
+  @IsOptional()
+  @IsString()
+  lastName?: string;
+
+  @IsOptional()
+  @IsUrl()
+  imageUrl?: string;
+}

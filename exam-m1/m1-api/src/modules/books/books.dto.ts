@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString, IsNumber, IsUUID } from 'class-validator';
 
 export class CreateBookDto {
   @IsNotEmpty()
@@ -10,11 +10,11 @@ export class CreateBookDto {
   yearPublished: number;
 
   @IsNotEmpty()
-  @IsInt()
+  @IsUUID()
   authorId: string;
 
   @IsOptional()
-  @IsInt()
+  @IsNumber()
   average: number;
 }
 
@@ -28,10 +28,10 @@ export class UpdateBookDto {
   yearPublished?: number;
 
   @IsOptional()
-  @IsInt()
+  @IsUUID()
   authorId?: string;
 
   @IsOptional()
-  @IsInt()
+  @IsNumber()
   average?: number;
 }

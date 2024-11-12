@@ -15,6 +15,9 @@ export class AuthorEntity extends BaseEntity {
   @Column({ name: 'image_url', type: 'varchar', nullable: true })
   imageUrl: string;
 
-  @OneToMany(() => BookEntity, (book) => book.author)
+  @Column({ name:'biography', type: 'varchar', nullable: true })
+  biography: string;
+
+  @OneToMany(() => BookEntity, (book) => book.author, {cascade : true })
   books: BookEntity[];
 }

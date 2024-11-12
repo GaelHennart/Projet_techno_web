@@ -12,6 +12,10 @@ export class CreateAuthorDto {
   @IsOptional()
   @IsUrl()
   imageUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  biography?: string;
 }
 
 export class UpdateAuthorDto {
@@ -26,4 +30,9 @@ export class UpdateAuthorDto {
   @IsOptional()
   @IsUrl()
   imageUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  biography?: string;
+
 }

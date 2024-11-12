@@ -7,6 +7,7 @@ export class AuthorPresenter {
       firstName: author.firstName,
       lastName: author.lastName,
       imageUrl: author.imageUrl,
+      biography: author.biography,
       bookCount: author.books?.length || 0,
       averageRating: author.books?.reduce((sum, book) => sum + (book.average || 0), 0) / (author.books?.length || 1),
     };

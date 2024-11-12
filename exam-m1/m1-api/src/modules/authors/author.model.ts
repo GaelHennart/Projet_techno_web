@@ -3,6 +3,7 @@ export interface Author {
   firstName: string;
   lastName: string;
   imageUrl?: string;
+  biography?: string;
   bookCount?: number;  
   averageRating?: number;  
 }

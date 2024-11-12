@@ -12,7 +12,7 @@ export class BooksController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: string) {
+  findOne(@Param('id') id: string) {
     return this.booksService.findOne(id);
   }
 
@@ -22,12 +22,12 @@ export class BooksController {
   }
 
   @Put(':id')
-  update(@Param('id', ParseIntPipe) id: string, @Body() updateBookDto: UpdateBookDto) {
+  update(@Param('id') id: string, @Body() updateBookDto: UpdateBookDto) {
     return this.booksService.update(id, updateBookDto);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: string) {
+  remove(@Param('id') id: string) {
     return this.booksService.remove(id);
   }
 }

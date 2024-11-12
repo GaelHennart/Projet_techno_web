@@ -4,15 +4,13 @@ import React, { useState } from 'react';
 interface AddAuthorModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddAuthor: (author: { firstName: string; lastName: string; photo: string }) => void;
+  onAddAuthor: (author: {
+    biography: string; firstName: string; lastName: string; photo: string 
+}) => void;
 }
 
 const AddAuthorModal: React.FC<AddAuthorModalProps> = ({ isOpen, onClose, onAddAuthor }) => {
-  const [name, setName] = useState('');
   const [photo, setPhoto] = useState<File | null>(null);
-
-  // États pour afficher les erreurs
-  const [nameError, setNameError] = useState('');
 
   // Fonction pour gérer le changement de fichier
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,7 +56,10 @@ const AddAuthorModal: React.FC<AddAuthorModalProps> = ({ isOpen, onClose, onAddA
 
     if (validateForm()) {
       // Si tout est valide, appeler la fonction pour ajouter l'auteur
-      onAddAuthor({ firstName, lastName, photo: photo ? URL.createObjectURL(photo) : '' });
+      onAddAuthor({
+        firstName, lastName, photo: photo ? URL.createObjectURL(photo) : '',
+        biography: ''
+      });
 
       // Réinitialiser les champs
       setFirstName('');

@@ -28,8 +28,9 @@ const AuthorsPage: React.FC = () => {
   const filteredAuthors = authors.filter((author) =>
     `${author.firstName} ${author.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
   // Fonction pour ajouter un nouvel auteur et l'envoyer à l'API
-  const handleAddAuthor = async (newAuthor: { firstName: string; lastName: string; photo: string; bookCount: number; averageRating: number }) => {
+  const handleAddAuthor = async (newAuthor: { firstName: string; lastName: string; photo: string; biography: string; averageRating: number; bookCount: number }) => {
     try {
       const response = await axios.post('http://localhost:3001/authors', newAuthor);
       const addedAuthor = response.data;
@@ -55,7 +56,7 @@ const AuthorsPage: React.FC = () => {
 
       {/* Message si aucun auteur n'est trouvé */}
       {filteredAuthors.length === 0 && searchTerm && (
-        <p className="text-white mt-4">Aucun auteur trouvé pour "{searchTerm}"</p>
+        <p className="text-black mt-4 text-center">Aucun auteur trouvé pour "{searchTerm}"</p>
       )}
 
       {/* Bouton pour ajouter un auteur */}
@@ -83,7 +84,8 @@ const AuthorsPage: React.FC = () => {
             firstName: newAuthor.firstName,
             lastName: newAuthor.lastName,
             averageRating: 0,
-            bookCount: 0
+            bookCount: 0,
+            biography: newAuthor.biography
           })
         }
       />

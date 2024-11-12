@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button, Modal, Typography, Box } from '@mui/material';
 import axios from 'axios';
+import { Book } from '../../../../../../m1-api/src/modules/books/books.model';
 
 const modalStyle = {
   position: 'absolute' as 'absolute',
@@ -17,24 +18,24 @@ const modalStyle = {
 
 const AuthorDetailPage: React.FC = () => {
   const params = useParams();
-  const { id } = params as { id: string };
+  const { id: authorId } = params as { id: string };
   const router = useRouter();
 
   const [author, setAuthor] = useState<any>(null);
-  const [books, setBooks] = useState<any[]>([]);
+  const [books, setBooks] = useState<Book[]>([]);
   const [deleteAuthorModalOpen, setDeleteAuthorModalOpen] = useState(false);
   const [addBookModalOpen, setAddBookModalOpen] = useState(false);
   const [deleteBookModalOpen, setDeleteBookModalOpen] = useState<string | null>(null);
+  const [editAuthorModalOpen, setEditAuthorModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id) {
+    if (!authorId) {
       setError("ID de l'auteur non spécifié.");
       return;
     }
 
-    // Récupère les informations de l'auteur
-    axios.get(`http://localhost:3001/authors/${id}`)
+    axios.get(`http://localhost:3001/authors/${authorId}`)
       .then((response) => {
         setAuthor(response.data);
         setError(null);
@@ -44,19 +45,18 @@ const AuthorDetailPage: React.FC = () => {
         setError("Auteur non trouvé ou erreur lors de la récupération.");
       });
 
-    // Récupère les livres de cet auteur en fonction de son ID
-    axios.get(`http://localhost:3001/books/author/${id}`)
+    axios.get(`http://localhost:3001/books/author/${authorId}`)
       .then((response) => {
         setBooks(response.data);
       })
       .catch((error) => {
         console.error("Error fetching books:", error);
       });
-  }, [id]);
+  }, [authorId]);
 
   const handleDeleteAuthor = async () => {
     try {
-      await axios.delete(`http://localhost:3001/authors/${id}`);
+      await axios.delete(`http://localhost:3001/authors/${authorId}`);
       setDeleteAuthorModalOpen(false);
       router.push('/pages/authors');
     } catch (error) {
@@ -64,16 +64,67 @@ const AuthorDetailPage: React.FC = () => {
     }
   };
 
-  const handleAddBook = async (title: string) => {
+  const handleEditAuthor = async () => {
+    const firstName = (document.getElementById('editAuthorFirstName') as HTMLInputElement).value;
+    const lastName = (document.getElementById('editAuthorLastName') as HTMLInputElement).value;
+    const imageUrl = (document.getElementById('editAuthorImageUrl') as HTMLInputElement).value;
+    const biography = (document.getElementById('editAuthorBiography') as HTMLTextAreaElement).value;
+
+    if (!firstName || !lastName || !authorId) {
+      alert("Veuillez remplir tous les champs correctement.");
+      return;
+    }
+
+    const updatedAuthor = {
+      firstName,
+      lastName,
+      imageUrl,
+      biography,
+    };
+
     try {
-      const response = await axios.post(`http://localhost:3001/books`, {
-        title,
-        authorId: id,
-      });
+      const response = await axios.put(`http://localhost:3001/authors/${authorId}`, updatedAuthor);
+      setAuthor(response.data);
+      setEditAuthorModalOpen(false);
+    } catch (error) {
+      console.error('Error updating author:', error);
+    }
+  };
+
+  const handleAddBook = async () => {
+    const title = (document.getElementById('newBookTitle') as HTMLInputElement).value;
+    const yearPublished = Number((document.getElementById('newBookYear') as HTMLInputElement).value);
+    const price = Number((document.getElementById('newBookPrice') as HTMLInputElement).value);
+
+    // Validation des données
+    if (!title || isNaN(yearPublished) || isNaN(price) || !authorId) {
+      alert("Veuillez remplir tous les champs correctement.");
+      return;
+    }
+
+    const newBook: Omit<Book, 'id'> = {
+      title,
+      yearPublished,
+      price,
+      authorId,
+      average: 1
+    };
+
+    try {
+      const response = await axios.post<Book>(`http://localhost:3001/books`, newBook);
       setBooks([...books, response.data]);
       setAddBookModalOpen(false);
     } catch (error) {
-      console.error('Error adding book:', error);
+      if (axios.isAxiosError(error)) {
+        // Axios-specific error handling
+        console.error('Error adding book:', error.response?.data || error.message);
+      } else if (error instanceof Error) {
+        // General JavaScript error handling
+        console.error('Error adding book:', error.message);
+      } else {
+        // Log the entire error object for inspection if it's neither Axios nor a standard Error
+        console.error('Unexpected error adding book:', JSON.stringify(error, null, 2));
+      }
     }
   };
 
@@ -91,19 +142,21 @@ const AuthorDetailPage: React.FC = () => {
   if (!author) return <div>Chargement...</div>;
 
   return (
-    <div>
-      <Typography variant="h4">{author.firstName} {author.lastName}</Typography>
+    <div style={{ textAlign: 'center' }}>
       {author.imageUrl && (
-        <img src={author.imageUrl} alt={`${author.firstName} ${author.lastName}`} style={{ width: '200px', height: 'auto' }} />
+        <><Typography variant="h5">{`${author.firstName} ${author.lastName}`}</Typography>
+        <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
+          <img src={author.imageUrl} alt={`${author.firstName} ${author.lastName}`} style={{ width: '200px', height: 'auto', marginBottom: '10px' }} />
+        </div></>
       )}
+      <Typography variant="body1" style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center', padding: '0 20px' }}>{author.biography}</Typography>
       <Typography variant="h6">Livres:</Typography>
-      <ul>
+      <ul style={{ listStyleType: 'none', padding: 0 }}>
         {books.length > 0 ? (
-          books.map((book: any) => (
-            <li key={book.id}>
-              <a href={`/books/${book.id}`}>{book.title}</a>
-              <span style={{ marginRight: '10px' }}></span>
-              <Button variant="contained" color="error" onClick={() => setDeleteBookModalOpen(book.id)}>
+          books.map((book) => (
+            <li key={book.id} style={{ marginBottom: '10px' }}>
+              <a href={`/books/${book.id}`}>{book.title}</a> - {book.yearPublished} - ${book.price}
+              <Button variant="contained" color="error" onClick={() => setDeleteBookModalOpen(book.id)} style={{ marginLeft: '10px' }}>
                 Supprimer
               </Button>
             </li>
@@ -113,27 +166,33 @@ const AuthorDetailPage: React.FC = () => {
         )}
       </ul>
       
-      <Button variant="contained" color="primary" onClick={() => setAddBookModalOpen(true)}>
+      <Button variant="contained" color="primary" onClick={() => setAddBookModalOpen(true)} style={{ margin: '10px' }}>
         Ajouter un livre
       </Button>
-      <Button variant="contained" color="secondary" onClick={() => setDeleteAuthorModalOpen(true)}>
+      <Button variant="contained" color="secondary" onClick={() => setDeleteAuthorModalOpen(true)} style={{ margin: '10px' }}>
         Supprimer l'auteur
       </Button>
-
-      {/* Modal pour ajouter un livre */}
+      <Button variant="contained" color="primary" onClick={() => setEditAuthorModalOpen(true)} style={{ margin: '10px' }}>
+        Modifier l'auteur
+      </Button>
       <Modal open={addBookModalOpen} onClose={() => setAddBookModalOpen(false)}>
         <Box sx={modalStyle}>
-          <Typography variant="h6">Ajouter un nouveau livre</Typography>
-          <input type="text" placeholder="Titre du livre" id="newBookTitle" />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              const title = (document.getElementById('newBookTitle') as HTMLInputElement).value;
-              handleAddBook(title);
-            }}
-            sx={{ mt: 2 }}
-          >
+          <Typography variant="h6" gutterBottom>Ajouter un nouveau livre</Typography>
+          <div>
+            <label htmlFor="newBookTitle">Titre du livre</label>
+            <input type="text" id="newBookTitle" style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} 
+            className="border p-2 w-full rounded"
+            />
+            <label htmlFor="newBookYear">Année de publication</label>
+            <input type="number" id="newBookYear" style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} 
+            className="border p-2 w-full rounded"
+            />
+            <label htmlFor="newBookPrice">Prix</label>
+            <input type="number" id="newBookPrice" style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} 
+            className="border p-2 w-full rounded"
+            />
+          </div>
+          <Button variant="contained" color="primary" onClick={handleAddBook} sx={{ mt: 2 }}>
             Ajouter
           </Button>
           <Button variant="outlined" onClick={() => setAddBookModalOpen(false)} sx={{ mt: 2 }}>
@@ -141,8 +200,6 @@ const AuthorDetailPage: React.FC = () => {
           </Button>
         </Box>
       </Modal>
-
-      {/* Modal pour confirmer la suppression de l'auteur */}
       <Modal open={deleteAuthorModalOpen} onClose={() => setDeleteAuthorModalOpen(false)}>
         <Box sx={modalStyle}>
           <Typography variant="h6">Êtes-vous sûr de vouloir supprimer cet auteur ?</Typography>
@@ -154,23 +211,43 @@ const AuthorDetailPage: React.FC = () => {
           </Button>
         </Box>
       </Modal>
-
-      {/* Modal pour confirmer la suppression d'un livre */}
       <Modal open={!!deleteBookModalOpen} onClose={() => setDeleteBookModalOpen(null)}>
         <Box sx={modalStyle}>
           <Typography variant="h6">Êtes-vous sûr de vouloir supprimer ce livre ?</Typography>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => {
-              if (deleteBookModalOpen) handleDeleteBook(deleteBookModalOpen);
-            }}
-            sx={{ mr: 2 }}
-          >
+          <Button variant="contained" color="error" onClick={() => deleteBookModalOpen && handleDeleteBook(deleteBookModalOpen)} sx={{ mr: 2 }}>
             Oui
           </Button>
           <Button variant="outlined" onClick={() => setDeleteBookModalOpen(null)}>
             Non
+          </Button>
+        </Box>
+      </Modal>
+      <Modal open={editAuthorModalOpen} onClose={() => setEditAuthorModalOpen(false)}>
+        <Box sx={modalStyle}>
+            <Typography variant="h6" gutterBottom>Modifier les informations de l'auteur</Typography>
+          <div>
+            <label htmlFor="editAuthorFirstName">Prénom</label>
+            <input type="text" id="editAuthorFirstName" defaultValue={author.firstName} style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} 
+            className="border p-2 w-full rounded"
+            />
+            <label htmlFor="editAuthorLastName">Nom</label>
+            <input type="text" id="editAuthorLastName" defaultValue={author.lastName} style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} 
+            className="border p-2 w-full rounded"
+            />
+            <label htmlFor="editAuthorImageUrl">URL de l'image</label>
+            <input type="text" id="editAuthorImageUrl" defaultValue={author.imageUrl} style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} 
+            className="border p-2 w-full rounded"
+            />
+            <label htmlFor="editAuthorBiography">Biographie</label>
+            <textarea id="editAuthorBiography" defaultValue={author.biography} style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} 
+            className="border p-2 w-full rounded"
+            />
+          </div>
+          <Button variant="contained" color="primary" onClick={handleEditAuthor} sx={{ mt: 2 }}>
+            Enregistrer
+          </Button>
+          <Button variant="outlined" onClick={() => setEditAuthorModalOpen(false)} sx={{ mt: 2 }}>
+            Annuler
           </Button>
         </Box>
       </Modal>

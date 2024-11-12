@@ -16,6 +16,11 @@ export class BooksController {
     return this.booksService.findOne(id);
   }
 
+  @Get('author/:authorId') 
+  async findbooksByAuthorId(@Param('authorId') authorId: string) {
+    return this.booksService.findBookByAuthorId(authorId);
+  }
+
   @Post()
   create(@Body() createBookDto: CreateBookDto) {
     return this.booksService.create(createBookDto);

@@ -16,6 +16,10 @@ export class BooksService {
     return this.booksRepository.findOne(id);
   }
 
+  public async findBookByAuthorId(bookId: string) {
+    return await this.booksRepository.findBooksByAuthorId(bookId);
+  }
+
   public async create(createBookDto: CreateBookDto) {
     const book = new BookEntity();
     book.title = createBookDto.title;

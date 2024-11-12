@@ -18,6 +18,10 @@ export class BooksRepository {
     return this.bookRepository.findOne({ where: { id } });
   }
 
+  public async findBooksByAuthorId(authorId: string): Promise<BookEntity[]> {
+    return this.bookRepository.find({ where: { author: { id: authorId } } });
+  }
+
   public async create(bookData: Partial<BookEntity>) {
     const book = this.bookRepository.create(bookData);
     return this.bookRepository.save(book);

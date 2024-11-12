@@ -11,7 +11,7 @@ interface SearchBarProps {
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [placeholder, setPlaceholder] = useState('Rechercher un livre');
-  const pathname = usePathname(); // Utilisation de usePathname au lieu de useRouter
+  const pathname = usePathname();
 
   useEffect(() => {
     if (pathname.includes('authors')) {
@@ -38,7 +38,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
     >
       <Image
         src="/images/search.png"
-        alt="IcÃ´ne de recherche"
+        alt="Icône de recherche"
         width={20}
         height={20}
         className="mr-2"

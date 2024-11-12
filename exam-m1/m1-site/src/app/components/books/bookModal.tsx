@@ -19,7 +19,7 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onAddBook 
     const publicationDate = new Date(publication_date);
 
     // Convertir l'image en URL (si une image est choisie)
-    const imageURL = image ? URL.createObjectURL(image) : "/images/default.png"; // Si aucune image n'est choisie, une image par défaut
+    const imageURL = image ? URL.createObjectURL(image) : "/images/salameche.png"; // Si aucune image n'est choisie, une image par défaut
 
     // Appel de la fonction onAddBook avec les données du livre
     onAddBook({ title, publication_date: publicationDate, author, book_image: imageURL });
@@ -73,19 +73,11 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onAddBook 
               className="border p-2 w-full rounded"
             />
           </div>
-
           <div className="flex justify-between">
-            <button
-              type="button"
-              onClick={onClose}
-              className="bg-gray-300 p-2 rounded"
-            >
+            <button type="button" onClick={onClose} className="bg-gray-300 p-2 rounded">
               Annuler
             </button>
-            <button
-              type="submit"
-              className="bg-blue-500 text-white p-2 rounded"
-            >
+            <button type="submit" className="bg-blue-500 text-white p-2 rounded">
               Ajouter
             </button>
           </div>

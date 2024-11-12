@@ -24,7 +24,7 @@ const HomePage = () => {
   return (
     <>
       <section>
-        <div className="flex-grow flex flex-col items-start text-left px-10">
+        <div className="flex-grow flex flex-col items-start text-left px-10" style={{ fontFamily: 'Montserrat, sans-serif' }}>
           <h1 className="text-[#3a86ff] text-2xl sm:text-3xl lg:text-5xl font-bold mt-48 ml-[375px]">
             Bienvenue <span className="auto-typing text-[#ff006e]"></span>
           </h1>

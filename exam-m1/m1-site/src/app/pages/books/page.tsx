@@ -1,5 +1,7 @@
 "use client";
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import BookCard from "../../components/books/bookCard";
 import SearchBar from "../../components/searchBar";
 import BookSorter from "../../components/books/bookSorter";
@@ -15,50 +17,54 @@ interface Book {
 }
 
 const BooksPage = () => {
-  const initialBooks: Book[] = [
-    { id: "1", book_image: "/images/salameche.png", title: "Salameche", author: "Gaël", publishDate: "Existe depuis toujours", rating: 4.5 },
-    { id: "2", book_image: "/images/pikachu.webp", title: "Pikachu", author: "Sacha", publishDate: "Existe depuis toujours", rating: 4.5 },
-  ];
-
-  const [books, setBooks] = useState<Book[]>(initialBooks); // Initialiser les livres avec initialBooks
+  const [books, setBooks] = useState<Book[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [sortedBooks, setSortedBooks] = useState<Book[]>(initialBooks); // Books triés
+  const [sortedBooks, setSortedBooks] = useState<Book[]>([]);
 
-  // Fonction pour filtrer les livres en fonction du terme de recherche
+  const fetchBooks = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/books');
+      setBooks(response.data);
+      setSortedBooks(response.data);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des livres:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchBooks();
+  }, []);
+
   const filteredBooks = sortedBooks.filter((book) =>
     book.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Fonction de mise à jour du terme de recherche
   const handleSearch = (term: string) => {
     setSearchTerm(term);
   };
 
-  // Fonction pour gérer le tri des livres
   const handleSort = (sorted: Book[]) => {
     setSortedBooks(sorted);
   };
 
-  // Fonction pour ajouter un livre
   const handleAddBook = (newBook: { title: string; publication_date: Date; author: string; book_image: string }) => {
-    const newId = (books.length + 1).toString(); // Générer un ID unique
-    const newBookWithId: Book = { 
-      id: newId, 
-      title: newBook.title, 
-      author: newBook.author, 
-      publishDate: newBook.publication_date.toISOString(), 
-      book_image: newBook.book_image, // Ajouter l'image téléchargée
-      rating: 0 // Note par défaut
+    const newId = (books.length + 1).toString();
+    const newBookWithId: Book = {
+      id: newId,
+      title: newBook.title,
+      author: newBook.author,
+      publishDate: newBook.publication_date.toISOString(),
+      book_image: newBook.book_image,
+      rating: 0
     };
     setBooks((prevBooks) => {
       const updatedBooks = [...prevBooks, newBookWithId];
-      setSortedBooks(updatedBooks); // Assurez-vous que la liste triée est mise à jour avec le nouvel livre
+      setSortedBooks(updatedBooks);
       return updatedBooks;
     });
   };
 
-  // Fonction pour ouvrir/fermer la modale
   const toggleModal = () => setIsModalOpen((prev) => !prev);
 
   return (

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { FaSortAlphaDown, FaSortAlphaUp, FaUser, FaStar } from 'react-icons/fa';
 import { IconContext } from 'react-icons';
-import BookCard from './bookCard';
 
 interface Book {
   id: string;
@@ -62,31 +61,23 @@ const BookSorter: React.FC<BookSorterProps> = ({ books, onSort }) => {
           <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
             <IconContext.Provider value={{ className: 'mr-2' }}>
               <div className="py-1">
-                <button
-                  onClick={() => sortBooks('title-asc')}
-                  className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
+                <button onClick={() => sortBooks('title-asc')}
+                  className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                   <FaSortAlphaDown />
                   Titre (A-Z)
                 </button>
-                <button
-                  onClick={() => sortBooks('title-desc')}
-                  className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
+                <button onClick={() => sortBooks('title-desc')}
+                  className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                   <FaSortAlphaUp />
                   Titre (Z-A)
                 </button>
-                <button
-                  onClick={() => sortBooks('author')}
-                  className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
+                <button onClick={() => sortBooks('author')} 
+                  className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                   <FaUser />
                   Auteur
                 </button>
-                <button
-                  onClick={() => sortBooks('rating')}
-                  className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
+                <button onClick={() => sortBooks('rating')}
+                  className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                   <FaStar />
                   Note
                 </button>

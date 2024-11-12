@@ -1,60 +1,50 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AuthorItem from '../../Components/AuthorCard';
 import SearchBar from '../../Components/SearchBar';
 import AddAuthorModal from '../../Components/AuthorModale';
-
-interface Author {
-  id: number;
-  name: string;
-  photo: string;
-  bookCount: number;
-  averageRating: number;
-}
-
-const initialAuthors: Author[] = [
-  {
-    id: 1,
-    name: "Victor Hugo",
-    photo: "/images/victor_hugo.jpg",
-    bookCount: 12,
-    averageRating: 4.5,
-  },
-  {
-    id: 2,
-    name: "George Orwell",
-    photo: "/images/george_orwell.jpg",
-    bookCount: 5,
-    averageRating: 4.7,
-  },
-  // Ajoutez d'autres auteurs si nécessaire
-];
+import { Author } from '../../../../../m1-api/src/modules/authors/author.model';
+import axios from 'axios';
 
 const AuthorsPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [authors, setAuthors] = useState<Author[]>(initialAuthors);
+  const [authors, setAuthors] = useState<Author[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Chargement initial des auteurs depuis l'API
+  useEffect(() => {
+    const fetchAuthors = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/authors');
+        setAuthors(response.data);
+      } catch (error) {
+        console.error('Error fetching authors:', error);
+      }
+    };
+    fetchAuthors();
+  }, []);
 
   // Filtrer les auteurs en fonction du terme de recherche
   const filteredAuthors = authors.filter((author) =>
-    author.name.toLowerCase().includes(searchTerm.toLowerCase())
+    `${author.firstName} ${author.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  // Fonction pour ajouter un nouvel auteur
-  const handleAddAuthor = (newAuthor: { name: string; photo: string; bookCount: number; averageRating: number }) => {
-    const newId = authors.length ? authors[authors.length - 1].id + 1 : 1; // Assigner un id unique
-    const newAuthorWithId = { ...newAuthor, id: newId };
-    setAuthors((prevAuthors) => [...prevAuthors, newAuthorWithId]);
-    setIsModalOpen(false); // Fermer la modale après l'ajout
+  // Fonction pour ajouter un nouvel auteur et l'envoyer à l'API
+  const handleAddAuthor = async (newAuthor: { firstName: string; lastName: string; photo: string; bookCount: number; averageRating: number }) => {
+    try {
+      const response = await axios.post('http://localhost:3001/authors', newAuthor);
+      const addedAuthor = response.data;
+      setAuthors((prevAuthors) => [...prevAuthors, addedAuthor]);
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error('Error adding author:', error);
+    }
   };
 
   // Fonction pour ouvrir/fermer la modale
   const toggleModal = () => setIsModalOpen((prev) => !prev);
 
   // Fonction de mise à jour du terme de recherche
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
-  };
+  const handleSearch = (term: string) => setSearchTerm(term);
 
   return (
     <>
@@ -87,7 +77,15 @@ const AuthorsPage: React.FC = () => {
       <AddAuthorModal
         isOpen={isModalOpen}
         onClose={toggleModal}
-        onAddAuthor={(newAuthor) => handleAddAuthor({ ...newAuthor, averageRating: 0 })}
+        onAddAuthor={(newAuthor) =>
+          handleAddAuthor({
+            ...newAuthor,
+            firstName: newAuthor.firstName,
+            lastName: newAuthor.lastName,
+            averageRating: 0,
+            bookCount: 0
+          })
+        }
       />
     </>
   );

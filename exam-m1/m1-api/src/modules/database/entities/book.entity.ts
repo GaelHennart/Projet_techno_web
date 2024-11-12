@@ -26,7 +26,7 @@ import {
     @Column({ name: 'average', type: 'float' })
     average: number;
   
-    @ManyToOne(() => AuthorEntity, (author) => author.books, { nullable: false })
+    @ManyToOne(() => AuthorEntity, (author) => author.books, { nullable: false, onDelete: 'CASCADE' })
     @JoinColumn({ name: 'author_id' })
     author: AuthorEntity;
 

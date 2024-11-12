@@ -4,17 +4,15 @@ import React, { useState } from 'react';
 interface AddAuthorModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddAuthor: (author: { name: string; photo: string; bookCount: number }) => void;
+  onAddAuthor: (author: { firstName: string; lastName: string; photo: string }) => void;
 }
 
 const AddAuthorModal: React.FC<AddAuthorModalProps> = ({ isOpen, onClose, onAddAuthor }) => {
   const [name, setName] = useState('');
   const [photo, setPhoto] = useState<File | null>(null);
-  const [bookCount, setBookCount] = useState(0);
 
   // États pour afficher les erreurs
   const [nameError, setNameError] = useState('');
-  const [bookCountError, setBookCountError] = useState('');
 
   // Fonction pour gérer le changement de fichier
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,23 +21,31 @@ const AddAuthorModal: React.FC<AddAuthorModalProps> = ({ isOpen, onClose, onAddA
     }
   };
 
+  // États pour les champs firstName et lastName
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+
+  // États pour afficher les erreurs
+  const [firstNameError, setFirstNameError] = useState('');
+  const [lastNameError, setLastNameError] = useState('');
+
   // Validation des champs
   const validateForm = () => {
     let valid = true;
 
     // Réinitialiser les erreurs
-    setNameError('');
-    setBookCountError('');
+    setFirstNameError('');
+    setLastNameError('');
 
-    // Validation du nom
-    if (name.trim() === '') {
-      setNameError('Le nom de l\'auteur est requis');
+    // Validation du prénom
+    if (firstName.trim() === '') {
+      setFirstNameError('Le prénom de l\'auteur est requis');
       valid = false;
     }
 
-    // Validation du nombre de livres
-    if (bookCount <= 0) {
-      setBookCountError('Le nombre de livres doit être supérieur à 0');
+    // Validation du nom
+    if (lastName.trim() === '') {
+      setLastNameError('Le nom de l\'auteur est requis');
       valid = false;
     }
 
@@ -52,12 +58,12 @@ const AddAuthorModal: React.FC<AddAuthorModalProps> = ({ isOpen, onClose, onAddA
 
     if (validateForm()) {
       // Si tout est valide, appeler la fonction pour ajouter l'auteur
-      onAddAuthor({ name, photo: photo ? URL.createObjectURL(photo) : '', bookCount });
+      onAddAuthor({ firstName, lastName, photo: photo ? URL.createObjectURL(photo) : '' });
 
       // Réinitialiser les champs
-      setName('');
+      setFirstName('');
+      setLastName('');
       setPhoto(null);
-      setBookCount(0);
     }
   };
 
@@ -68,18 +74,29 @@ const AddAuthorModal: React.FC<AddAuthorModalProps> = ({ isOpen, onClose, onAddA
     <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded-lg w-80">
         <h2 className="text-xl mb-4">Ajouter un Auteur</h2>
-        <form onSubmit={handleSubmit}>
-          {/* Champ nom */}
-          <div className="mb-4">
-            <label htmlFor="name" className="block mb-2">Nom</label>
+    <form onSubmit={handleSubmit}>
+        {/* Champ prénom */}
+          <label htmlFor="firstName" className="block mb-2">Prénom</label>
             <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="border p-2 w-full rounded"
-            />
-            {nameError && <p className="text-red-500 text-sm">{nameError}</p>} {/* Message d'erreur */}
+            type="text"
+            id="firstName"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            className="border p-2 w-full rounded"
+          />
+          {firstNameError && <p className="text-red-500 text-sm">{firstNameError}</p>} {/* Message d'erreur */}
+
+        {/* Champ nom */}
+        <div className="mb-4">
+          <label htmlFor="lastName" className="block mb-2">Nom</label>
+            <input
+            type="text"
+            id="lastName"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            className="border p-2 w-full rounded"
+          />
+          {lastNameError && <p className="text-red-500 text-sm">{lastNameError}</p>} {/* Message d'erreur */}
           </div>
 
           {/* Champ photo */}
@@ -97,20 +114,6 @@ const AddAuthorModal: React.FC<AddAuthorModalProps> = ({ isOpen, onClose, onAddA
               </div>
             )}
           </div>
-
-          {/* Champ nombre de livres */}
-          <div className="mb-4">
-            <label htmlFor="bookCount" className="block mb-2">Nombre de livres</label>
-            <input
-              type="number"
-              id="bookCount"
-              value={bookCount}
-              onChange={(e) => setBookCount(Number(e.target.value))}
-              className="border p-2 w-full rounded"
-            />
-            {bookCountError && <p className="text-red-500 text-sm">{bookCountError}</p>} {/* Message d'erreur */}
-          </div>
-
           {/* Boutons d'action */}
           <div className="flex justify-between">
             <button

@@ -1,14 +1,6 @@
 import React from 'react';
 import AuthorItem from './AuthorCard';
-
-// Définir les props pour le composant AuthorList
-interface Author {
-  id: number;
-  name: string;
-  photo: string;
-  bookCount: number;
-  averageRating: number;
-}
+import { Author } from '../../../../m1-api/src/modules/authors/author.model';
 
 interface AuthorListProps {
   authors: Author[];

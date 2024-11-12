@@ -1,83 +1,181 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Button, Drawer, List, ListItem, ListItemText, Modal, Typography } from '@mui/material';
-//import { getBookById, deleteBook, getReviewsByBookId } from '../../../m1-api/';
+import { useParams, useRouter } from 'next/navigation';
+import { Button, Modal, Typography, Box } from '@mui/material';
+import axios from 'axios';
 
-const BookDetailPage: React.FC = () => {
-    const { id } = useParams<{ id: string }>();
-    const [book, setBook] = useState<any>(null);
-    const [reviews, setReviews] = useState<any[]>([]);
-    const [drawerOpen, setDrawerOpen] = useState(false);
-    const [modalOpen, setModalOpen] = useState(false);
-
-    // useEffect(() => {
-    //     async function fetchBook() {
-    //         const bookData = await getBookById(id);
-    //         setBook(bookData);
-    //     }
-
-    //     async function fetchReviews() {
-    //         const reviewsData = await getReviewsByBookId(id);
-    //         setReviews(reviewsData);
-    //     }
-
-    //     fetchBook();
-    //     fetchReviews();
-    // }, [id]);
-
-    // const handleDelete = async () => {
-    //     await deleteBook(id);
-    //     // Redirect or update state after deletion
-    // };
-
-    const toggleDrawer = (open: boolean) => () => {
-        setDrawerOpen(open);
-    };
-
-    const toggleModal = (open: boolean) => () => {
-        setModalOpen(open);
-    };
-
-    if (!book) return <div>Chargement...</div>;
-
-    return (
-        <div>
-            <Typography variant="h4">{book.title}</Typography>
-            <Typography variant="h6">Prix: ${book.price}</Typography>
-            <Typography variant="h6">Date de parution: {book.year}</Typography>
-            <Typography variant="h6">
-                Auteur: <Link to={`/authors/${book.author.id}`}>{book.author.name}</Link>
-            </Typography>
-            <Button variant="contained" color="secondary" onClick={toggleModal(true)}>
-                Supprimer le livre
-            </Button>
-            <Button variant="contained" onClick={toggleDrawer(true)}>
-                Voir les avis
-            </Button>
-            <Modal open={modalOpen} onClose={toggleModal(false)}>
-                <div>
-                    <Typography>Etes-vous sûr de vouloir supprimer ce livre</Typography>
-                    {/* <Button onClick={handleDelete}>Oui</Button> */}
-                    <Button onClick={toggleModal(false)}>Non</Button>
-                </div>
-            </Modal>
-
-            <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
-                <List>
-                    {reviews.map((review) => (
-                        <ListItem key={review.id}>
-                            <ListItemText
-                                primary={`${review.stars} étoiles`}
-                                secondary={review.comment || 'Pas encore de commentaires sur ce livre'}
-                            />
-                        </ListItem>
-                    ))}
-                </List>
-            </Drawer>
-        </div>
-    );
+const modalStyle = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4,
 };
 
-export default BookDetailPage;
+const AuthorDetailPage: React.FC = () => {
+  const params = useParams();
+  const { id } = params as { id: string };
+  const router = useRouter();
+
+  const [author, setAuthor] = useState<any>(null);
+  const [books, setBooks] = useState<any[]>([]);
+  const [deleteAuthorModalOpen, setDeleteAuthorModalOpen] = useState(false);
+  const [addBookModalOpen, setAddBookModalOpen] = useState(false);
+  const [deleteBookModalOpen, setDeleteBookModalOpen] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!id) {
+      setError("ID de l'auteur non spécifié.");
+      return;
+    }
+
+    // Récupère les informations de l'auteur
+    axios.get(`http://localhost:3001/authors/${id}`)
+      .then((response) => {
+        setAuthor(response.data);
+        setError(null);
+      })
+      .catch((error) => {
+        console.error('Error fetching author:', error);
+        setError("Auteur non trouvé ou erreur lors de la récupération.");
+      });
+
+    // Récupère les livres de cet auteur en fonction de son ID
+    axios.get(`http://localhost:3001/books/author/${id}`)
+      .then((response) => {
+        setBooks(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching books:", error);
+      });
+  }, [id]);
+
+  const handleDeleteAuthor = async () => {
+    try {
+      await axios.delete(`http://localhost:3001/authors/${id}`);
+      setDeleteAuthorModalOpen(false);
+      router.push('/pages/authors');
+    } catch (error) {
+      console.error('Error deleting author:', error);
+    }
+  };
+
+  const handleAddBook = async (title: string) => {
+    try {
+      const response = await axios.post(`http://localhost:3001/books`, {
+        title,
+        authorId: id,
+      });
+      setBooks([...books, response.data]);
+      setAddBookModalOpen(false);
+    } catch (error) {
+      console.error('Error adding book:', error);
+    }
+  };
+
+  const handleDeleteBook = async (bookId: string) => {
+    try {
+      await axios.delete(`http://localhost:3001/books/${bookId}`);
+      setBooks(books.filter((book) => book.id !== bookId));
+      setDeleteBookModalOpen(null);
+    } catch (error) {
+      console.error('Error deleting book:', error);
+    }
+  };
+
+  if (error) return <div>{error}</div>;
+  if (!author) return <div>Chargement...</div>;
+
+  return (
+    <div>
+      <Typography variant="h4">{author.firstName} {author.lastName}</Typography>
+      {author.imageUrl && (
+        <img src={author.imageUrl} alt={`${author.firstName} ${author.lastName}`} style={{ width: '200px', height: 'auto' }} />
+      )}
+      <Typography variant="h6">Livres:</Typography>
+      <ul>
+        {books.length > 0 ? (
+          books.map((book: any) => (
+            <li key={book.id}>
+              <a href={`/books/${book.id}`}>{book.title}</a>
+              <span style={{ marginRight: '10px' }}></span>
+              <Button variant="contained" color="error" onClick={() => setDeleteBookModalOpen(book.id)}>
+                Supprimer
+              </Button>
+            </li>
+          ))
+        ) : (
+          <Typography variant="body1">Aucun livre disponible</Typography>
+        )}
+      </ul>
+      
+      <Button variant="contained" color="primary" onClick={() => setAddBookModalOpen(true)}>
+        Ajouter un livre
+      </Button>
+      <Button variant="contained" color="secondary" onClick={() => setDeleteAuthorModalOpen(true)}>
+        Supprimer l'auteur
+      </Button>
+
+      {/* Modal pour ajouter un livre */}
+      <Modal open={addBookModalOpen} onClose={() => setAddBookModalOpen(false)}>
+        <Box sx={modalStyle}>
+          <Typography variant="h6">Ajouter un nouveau livre</Typography>
+          <input type="text" placeholder="Titre du livre" id="newBookTitle" />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              const title = (document.getElementById('newBookTitle') as HTMLInputElement).value;
+              handleAddBook(title);
+            }}
+            sx={{ mt: 2 }}
+          >
+            Ajouter
+          </Button>
+          <Button variant="outlined" onClick={() => setAddBookModalOpen(false)} sx={{ mt: 2 }}>
+            Annuler
+          </Button>
+        </Box>
+      </Modal>
+
+      {/* Modal pour confirmer la suppression de l'auteur */}
+      <Modal open={deleteAuthorModalOpen} onClose={() => setDeleteAuthorModalOpen(false)}>
+        <Box sx={modalStyle}>
+          <Typography variant="h6">Êtes-vous sûr de vouloir supprimer cet auteur ?</Typography>
+          <Button variant="contained" color="error" onClick={handleDeleteAuthor} sx={{ mr: 2 }}>
+            Oui
+          </Button>
+          <Button variant="outlined" onClick={() => setDeleteAuthorModalOpen(false)}>
+            Non
+          </Button>
+        </Box>
+      </Modal>
+
+      {/* Modal pour confirmer la suppression d'un livre */}
+      <Modal open={!!deleteBookModalOpen} onClose={() => setDeleteBookModalOpen(null)}>
+        <Box sx={modalStyle}>
+          <Typography variant="h6">Êtes-vous sûr de vouloir supprimer ce livre ?</Typography>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => {
+              if (deleteBookModalOpen) handleDeleteBook(deleteBookModalOpen);
+            }}
+            sx={{ mr: 2 }}
+          >
+            Oui
+          </Button>
+          <Button variant="outlined" onClick={() => setDeleteBookModalOpen(null)}>
+            Non
+          </Button>
+        </Box>
+      </Modal>
+    </div>
+  );
+};
+
+export default AuthorDetailPage;

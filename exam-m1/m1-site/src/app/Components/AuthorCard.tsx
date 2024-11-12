@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-
-interface Author {
-  id: number;
-  name: string;
-  photo: string;
-  bookCount: number;
-  averageRating: number;
-}
+import { Author } from '../../../../m1-api/src/modules/authors/author.model';
 
 // Définir une liste de couleurs
 const colors = [
@@ -46,11 +39,11 @@ const AuthorItem: React.FC<{ author: Author }> = ({ author }) => {
         {/* Container pour l'image avec largeur et hauteur fixes */}
         <div className="w-full h-[200px] overflow-hidden rounded-md">
           <img
-            src={author.photo}
-            alt={author.name}
+            src={author.imageUrl}
+            alt={`${author.firstName} ${author.lastName}`}
           />
         </div>
-        <h2 className="text-white text-xl mt-2">{author.name}</h2>
+        {author.firstName} {author.lastName}
         <p className="text-gray-400">Livres : {author.bookCount}</p>
         <p className="text-gray-400">Note moyenne : {author.averageRating}</p>
       </div>

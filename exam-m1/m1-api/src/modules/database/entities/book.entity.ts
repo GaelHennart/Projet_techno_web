@@ -26,7 +26,7 @@ import {
     @Column({ name: 'average', type: 'float' })
     average: number;
 
-    @Column({ name: 'price', type: 'int'})
+    @Column({ name: 'price', type: 'int', nullable: true})
     price: number;
   
     @ManyToOne(() => AuthorEntity, (author) => author.books, { nullable: false, onDelete: 'CASCADE' })

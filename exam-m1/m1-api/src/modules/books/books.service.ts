@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { BooksRepository } from './books.repository';
-import { BookEntity } from '../database/entities/book.entity';
 import { CreateBookDto, UpdateBookDto } from './books.dto';
-import { AuthorEntity } from '../database/entities/author.entity';
-
+import { BookPresenter } from './books.presenter';
 @Injectable()
 export class BooksService {
   constructor(private readonly booksRepository: BooksRepository) {}
@@ -21,16 +19,8 @@ export class BooksService {
   }
 
   public async create(createBookDto: CreateBookDto) {
-    const book = new BookEntity();
-    book.title = createBookDto.title;
-    book.yearPublished = createBookDto.yearPublished;
-    const author = new AuthorEntity();
-    author.id = createBookDto.authorId;
-    book.price = createBookDto.price
-    book.author = author;
-    book.average = createBookDto.average || 0;
-    
-    return this.booksRepository.create(book);
+    const book = await this.booksRepository.create(createBookDto);
+    return BookPresenter.present(book);
   }
 
   public async update(id: string, updateBookDto: UpdateBookDto) {

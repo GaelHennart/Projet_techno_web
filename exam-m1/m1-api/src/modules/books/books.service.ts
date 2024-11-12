@@ -26,6 +26,7 @@ export class BooksService {
     book.yearPublished = createBookDto.yearPublished;
     const author = new AuthorEntity();
     author.id = createBookDto.authorId;
+    book.price = createBookDto.price
     book.author = author;
     book.average = createBookDto.average || 0;
     

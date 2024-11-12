@@ -16,6 +16,10 @@ export class CreateBookDto {
   @IsOptional()
   @IsNumber()
   average: number;
+
+  @IsOptional()
+  @IsInt()
+  price?: number;
 }
 
 export class UpdateBookDto {
@@ -26,6 +30,10 @@ export class UpdateBookDto {
   @IsOptional()
   @IsInt()
   yearPublished?: number;
+
+  @IsOptional()
+  @IsInt()
+  price?: number;
 
   @IsOptional()
   @IsUUID()

@@ -6,6 +6,7 @@ export class BookPresenter {
       id: book.id,
       title: book.title,
       yearPublished: book.yearPublished,
+      price: book.price,
       authorId: book.authorId,
       average: book.average,
     };

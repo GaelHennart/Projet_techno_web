@@ -19,8 +19,16 @@ export class ReviewsService {
     return await this.reviewsRepository.create(review);
   }
 
+  public async findAll() {
+    return this.reviewsRepository.findAll();
+  }
+
   public async findOne(id: string) {
     return await this.reviewsRepository.findOne(id);
+  }
+  
+  public async findReviewsByBookId(bookId: string) {
+    return await this.reviewsRepository.findReviewsByBookId(bookId);
   }
 
   public async update(id: string, updateReviewDto: UpdateReviewDto) {

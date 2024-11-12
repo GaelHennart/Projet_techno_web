@@ -11,9 +11,19 @@ export class ReviewsController {
     return this.reviewsService.create(createReviewDto);
   }
 
+  @Get()
+  findAll() {
+    return this.reviewsService.findAll();
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.reviewsService.findOne(id);
+  }
+
+  @Get('book/:bookId') // Nouvelle route pour récupérer les reviews d'un livre
+  async findReviewsByBookId(@Param('bookId') bookId: string) {
+    return this.reviewsService.findReviewsByBookId(bookId);
   }
 
   @Put(':id')

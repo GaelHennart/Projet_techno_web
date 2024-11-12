@@ -5,7 +5,7 @@ import {
     JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
-    CreateDateColumn,
+    
 } from 'typeorm';
   import { BookEntity } from './book.entity';
   
@@ -20,8 +20,9 @@ import {
     @Column({ name: 'mark', type: 'float' })
     mark: number;
     
-    @Column({ name: 'created_at', type: 'timestamp' })
-    createdAt: Date;
+    @Column({ name: 'created_at', type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
+    created_at: Date;
+
   
     @ManyToOne(() => BookEntity, (book) => book.reviews, { nullable: false, onDelete: 'CASCADE' })
     @JoinColumn({ name: 'book_id' })

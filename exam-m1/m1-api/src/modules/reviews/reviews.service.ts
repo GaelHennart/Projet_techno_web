@@ -14,7 +14,7 @@ export class ReviewsService {
     const review = new ReviewEntity();
     review.reviews_description = createReviewDto.reviews_description;
     review.mark = createReviewDto.mark;
-    review.createdAt = new Date();
+    review.created_at = new Date();
     review.book = book; 
     return await this.reviewsRepository.create(review);
   }

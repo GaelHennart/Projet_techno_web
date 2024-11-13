@@ -1,15 +1,7 @@
 import React, { useState } from 'react';
 import { FaSortAlphaDown, FaSortAlphaUp, FaUser, FaStar } from 'react-icons/fa';
 import { IconContext } from 'react-icons';
-
-interface Book {
-  id: string;
-  title: string;
-  author: string;
-  publishDate: string;
-  rating: number;
-  book_image: string;
-}
+import { Book } from '../../../../../m1-api/src/modules/books/books.model';
 
 interface BookSorterProps {
   books: Book[];
@@ -34,13 +26,13 @@ const BookSorter: React.FC<BookSorterProps> = ({ books, onSort }) => {
         break;
       case 'author':
         sorted.sort((a, b) => {
-          const authorA = a.author || '';  // Si author est undefined, utiliser une chaîne vide
-          const authorB = b.author || '';  // Idem pour b.author
+            const authorA = `${a.author?.firstName || ''} ${a.author?.lastName || ''}`.trim();
+            const authorB = `${b.author?.firstName || ''} ${b.author?.lastName || ''}`.trim();
           return authorA.localeCompare(authorB);
         });
         break;
       case 'rating':
-        sorted.sort((a, b) => b.rating - a.rating);
+        sorted.sort((a, b) => b.average - a.average);
         break;
       default:
         break;

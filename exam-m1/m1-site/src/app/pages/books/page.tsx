@@ -4,8 +4,8 @@ import BookItem from '../../Components/Books/BookCard';
 import SearchBar from '../../Components/SearchBar';
 import AddBookModal from '../../Components/Books/BookModal';
 import { Book } from '../../../../../m1-api/src/modules/books/books.model';
-
 import axios from 'axios';
+import BookSorter from '../../Components/Books/BookSorter'; // Import BookSorter
 
 const BooksPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -48,11 +48,21 @@ const BooksPage: React.FC = () => {
   // Update search term
   const handleSearch = (term: string) => setSearchTerm(term);
 
+  // Handle sorting of books
+  const handleSort = (sortedBooks: Book[]) => {
+    setBooks(sortedBooks); // Update books with the sorted list
+  };
+
   return (
     <>
       {/* Search Bar */}
       <div className="w-full max-w-md mx-auto">
         <SearchBar onSearch={handleSearch} />
+      </div>
+
+      {/* Book Sorter */}
+      <div className="w-full max-w-md mx-auto mt-4">
+        <BookSorter books={filteredBooks} onSort={handleSort} /> {/* Pass filtered books to BookSorter */}
       </div>
 
       {/* Message if no books found */}
@@ -77,16 +87,16 @@ const BooksPage: React.FC = () => {
 
       {/* Add Book Modal */}
       <AddBookModal
-              isOpen={isModalOpen}
-              onClose={toggleModal}
-              onAddBook={(newBook) => handleAddBook({
-                  ...newBook,
-                  title: newBook.title,
-                  yearPublished: newBook.yearPublished,
-                  price: newBook.price,
-                  authorId: newBook.authorId,
-                  averageRating: 0,
-              })} authors={[]}      />
+        isOpen={isModalOpen}
+        onClose={toggleModal}
+        onAddBook={(newBook) => handleAddBook({
+          ...newBook,
+          title: newBook.title,
+          yearPublished: newBook.yearPublished,
+          price: newBook.price,
+          authorId: newBook.authorId,
+          averageRating: 0,
+        })} authors={[]} />
     </>
   );
 };

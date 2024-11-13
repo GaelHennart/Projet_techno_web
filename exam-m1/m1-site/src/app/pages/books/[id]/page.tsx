@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Button, Modal, Typography, Box } from '@mui/material';
+import { Button, Modal, Typography, Box, TextField, Rating, Drawer, IconButton } from '@mui/material';
 import axios from 'axios';
 import { Book } from '../../../../../../m1-api/src/modules/books/books.model';
+import SortIcon from '@mui/icons-material/Sort';
 
 const modalStyle = {
   position: 'absolute' as 'absolute',
@@ -22,9 +23,16 @@ const BookDetailPage: React.FC = () => {
   const router = useRouter();
 
   const [book, setBook] = useState<Book | null>(null);
+  const [reviews, setReviews] = useState<any[]>([]); // State to store reviews
   const [editBookModalOpen, setEditBookModalOpen] = useState(false);
   const [deleteBookModalOpen, setDeleteBookModalOpen] = useState(false);
+  const [reviewModalOpen, setReviewModalOpen] = useState(false); // Modal to add review
+  const [rating, setRating] = useState<number | null>(null); // Rating (1 to 5)
+  const [comment, setComment] = useState<string>(''); // Optional comment
   const [error, setError] = useState<string | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false); // State to manage the Drawer visibility
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc'); // Sort order for reviews
+  const [date, setDate] = useState<string>(''); // Date entrée par l'utilisateur
 
   useEffect(() => {
     if (!bookId) {
@@ -32,6 +40,7 @@ const BookDetailPage: React.FC = () => {
       return;
     }
 
+    // Fetch book details
     axios.get(`http://localhost:3001/books/${bookId}`)
       .then((response) => {
         setBook(response.data);
@@ -41,7 +50,23 @@ const BookDetailPage: React.FC = () => {
         console.error('Error fetching book:', error);
         setError("Livre non trouvé ou erreur lors de la récupération.");
       });
+
+    // Fetch reviews for the book
+    axios.get(`http://localhost:3001/reviews?bookId=${bookId}`)
+      .then((response) => {
+        setReviews(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching reviews:', error);
+      });
   }, [bookId]);
+
+  // Sort reviews by date
+  const sortedReviews = reviews.sort((a, b) => {
+    const dateA = new Date(a.createdAt).getTime();
+    const dateB = new Date(b.createdAt).getTime();
+    return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+  });
 
   const handleDeleteBook = async () => {
     try {
@@ -79,12 +104,57 @@ const BookDetailPage: React.FC = () => {
     }
   };
 
+  const handleAddReview = async () => {
+    if (!rating) {
+      alert("Veuillez sélectionner une note.");
+      return;
+    }
+  
+    if (!date) { // Vérification si la date est vide
+      alert("Veuillez entrer une date.");
+      return;
+    }
+  
+    const newReview = {
+      mark: rating,
+      reviews_description: comment || '', // Si aucun commentaire n'est fourni, on envoie une chaîne vide
+      bookId: bookId, // Le bookId est déjà défini
+      createdAt: new Date(date), // Passer la date sélectionnée
+    };
+  
+    try {
+      await axios.post(`http://localhost:3001/reviews`, newReview);
+      setReviewModalOpen(false);
+      setRating(null); // Réinitialiser la note
+      setComment(''); // Réinitialiser le commentaire
+      setDate(''); // Réinitialiser la date
+      // Optionnellement, vous pouvez récupérer à nouveau les avis pour mettre à jour l'interface
+      const response = await axios.get(`http://localhost:3001/reviews?bookId=${bookId}`);
+      setReviews(response.data); // Mettre à jour les avis
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout de l\'avis :', error);
+    }
+  };
+  
+
   if (error) return <div>{error}</div>;
   if (!book) return <div>Chargement...</div>;
 
   return (
     <div style={{ textAlign: 'center', padding: '20px' }}>
       <Typography variant="h4" gutterBottom>{book.title}</Typography>
+      {/* Ajout de l'affichage de l'auteur */}
+      <div className="flex flex-col justify-between h-20">
+        <p className="text-lg text-gray-600" style={{ fontFamily: 'Pacifico, cursive' }}>
+          Par{" "}
+          {/* Utiliser Link pour rendre le nom de l'auteur cliquable */}
+          {book.author && (
+        <a href={`/pages/authors/${book.author.id}`} style={{ cursor: 'pointer', color: '#inherit' }}>
+          {book.author ? `${book.author.firstName} ${book.author.lastName}` : 'Auteur inconnu'}
+        </a>
+          )}
+        </p>
+      </div>
       <Typography variant="body1" style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center', marginBottom: '20px' }}>
         Année de publication: {book.yearPublished}
       </Typography>
@@ -98,6 +168,43 @@ const BookDetailPage: React.FC = () => {
       <Button variant="contained" color="primary" onClick={() => setEditBookModalOpen(true)} style={{ margin: '10px' }}>
         Modifier le livre
       </Button>
+      <Button variant="contained" color="inherit" onClick={() => setReviewModalOpen(true)} style={{ margin: '10px' }}>
+        Ajouter un avis
+      </Button>
+      <Button variant="contained" color="info" onClick={() => setDrawerOpen(true)} style={{ margin: '10px' }}>
+        Voir les avis
+      </Button>
+
+      {/* Drawer for reviews */}
+      <Drawer
+        anchor="right"
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+      >
+        <Box sx={{ width: 400, padding: '20px' }}>
+          <Typography variant="h6" gutterBottom>Avis</Typography>
+          <IconButton onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}>
+            <SortIcon />
+          </IconButton>
+          <div style={{ marginTop: '20px' }}>
+            {sortedReviews.length > 0 ? (
+              sortedReviews.map((review, index) => (
+                <Box key={index} sx={{ border: '1px solid #ccc', borderRadius: '5px', padding: '10px', marginBottom: '10px' }}>
+                  <Rating value={review.mark} readOnly size="small" />
+                  <Typography variant="body2" style={{ marginTop: '5px' }}>
+                    {review.reviews_description || 'Pas de commentaire'}
+                  </Typography>
+                  <Typography variant="caption" color="textSecondary" style={{ marginTop: '5px' }}>
+                    {new Date(review.createdAt).toLocaleDateString()}
+                  </Typography>
+                </Box>
+              ))
+            ) : (
+              <Typography variant="body2" color="textSecondary">Aucun avis pour ce livre.</Typography>
+            )}
+          </div>
+        </Box>
+      </Drawer>
 
       {/* Modal pour édition */}
       <Modal open={editBookModalOpen} onClose={() => setEditBookModalOpen(false)}>
@@ -129,6 +236,48 @@ const BookDetailPage: React.FC = () => {
           </Button>
           <Button variant="outlined" onClick={() => setDeleteBookModalOpen(false)}>
             Non
+          </Button>
+        </Box>
+      </Modal>
+
+      {/* Modal pour ajouter un avis */}
+      <Modal open={reviewModalOpen} onClose={() => setReviewModalOpen(false)}>
+        <Box sx={modalStyle}>
+          <Typography variant="h6" gutterBottom>Ajouter un avis</Typography>
+          <div>
+            <Rating
+              value={rating}
+              onChange={(event, newValue) => setRating(newValue)}
+              precision={0.5}
+              size="large"
+            />
+          </div>
+          <TextField
+            label="Date de l'avis"
+            type="date"
+            fullWidth
+            value={date}
+            onChange={(e) => setDate(e.target.value)} // Mise à jour de l'état `date`
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+          <div style={{ marginTop: '10px' }}>
+            <TextField
+              label="Commentaire (optionnel)"
+              multiline
+              rows={4}
+              variant="outlined"
+              fullWidth
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            />
+          </div>
+          <Button variant="contained" color="primary" onClick={handleAddReview} sx={{ mt: 2 }}>
+            Ajouter l'avis
+          </Button>
+          <Button variant="outlined" onClick={() => setReviewModalOpen(false)} sx={{ mt: 2 }}>
+            Annuler
           </Button>
         </Box>
       </Modal>

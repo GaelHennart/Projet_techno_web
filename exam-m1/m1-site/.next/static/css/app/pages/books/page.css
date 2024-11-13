@@ -616,6 +616,9 @@ video {
 .max-w-screen-xl {
   max-width: 1280px;
 }
+.shrink {
+  flex-shrink: 1;
+}
 .flex-grow {
   flex-grow: 1;
 }

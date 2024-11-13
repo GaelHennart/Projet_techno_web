@@ -19,6 +19,10 @@ export class AuthorsRepository {
     return this.authorRepo.findOne({ where: { id }, relations: ['books'] });
   }
 
+  async findAuthorById(id: string): Promise<AuthorEntity | null> {  
+    return this.authorRepo.findOne({ where: { id } });
+  }
+
   async create(createAuthorDto: CreateAuthorDto): Promise<AuthorEntity> {
     const author = this.authorRepo.create(createAuthorDto);
     return this.authorRepo.save(author);

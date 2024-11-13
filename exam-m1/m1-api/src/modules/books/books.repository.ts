@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BookEntity } from '../database/entities/book.entity';
+import { AuthorEntity } from '../database/entities/author.entity';
 
 @Injectable()
 export class BooksRepository {
@@ -21,6 +22,10 @@ export class BooksRepository {
   public async findBooksByAuthorId(authorId: string): Promise<BookEntity[]> {
     return this.bookRepository.find({ where: { author: { id: authorId } } });
   }
+
+  public async findAuthorById(authorId: string): Promise<AuthorEntity | null> {
+    return this.bookRepository.manager.findOne(AuthorEntity, { where: { id: authorId } });
+}
 
   public async create(bookData: Partial<BookEntity>) {
     const book = this.bookRepository.create(bookData);

@@ -96,7 +96,6 @@ const AuthorDetailPage: React.FC = () => {
     const yearPublished = Number((document.getElementById('newBookYear') as HTMLInputElement).value);
     const price = Number((document.getElementById('newBookPrice') as HTMLInputElement).value);
 
-    // Validation des données
     if (!title || isNaN(yearPublished) || isNaN(price) || !authorId) {
       alert("Veuillez remplir tous les champs correctement.");
       return;
@@ -116,13 +115,10 @@ const AuthorDetailPage: React.FC = () => {
       setAddBookModalOpen(false);
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        // Axios-specific error handling
         console.error('Error adding book:', error.response?.data || error.message);
       } else if (error instanceof Error) {
-        // General JavaScript error handling
         console.error('Error adding book:', error.message);
       } else {
-        // Log the entire error object for inspection if it's neither Axios nor a standard Error
         console.error('Unexpected error adding book:', JSON.stringify(error, null, 2));
       }
     }
@@ -142,20 +138,22 @@ const AuthorDetailPage: React.FC = () => {
   if (!author) return <div>Chargement...</div>;
 
   return (
-    <div style={{ textAlign: 'center' }}>
+    <div style={{ textAlign: 'center', padding: '20px' }}>
       {author.imageUrl && (
-        <><Typography variant="h5">{`${author.firstName} ${author.lastName}`}</Typography>
-        <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
-          <img src={author.imageUrl} alt={`${author.firstName} ${author.lastName}`} style={{ width: '200px', height: 'auto', marginBottom: '10px' }} />
-        </div></>
+        <>
+          <Typography variant="h4" gutterBottom>{`${author.firstName} ${author.lastName}`}</Typography>
+          <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
+            <img src={author.imageUrl} alt={`${author.firstName} ${author.lastName}`} style={{ width: '200px', height: 'auto', borderRadius: '10px' }} />
+          </div>
+        </>
       )}
-      <Typography variant="body1" style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center', padding: '0 20px' }}>{author.biography}</Typography>
-      <Typography variant="h6">Livres:</Typography>
+      <Typography variant="body1" style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center', marginBottom: '20px' }}>{author.biography}</Typography>
+      <Typography variant="h5" gutterBottom>Livres:</Typography>
       <ul style={{ listStyleType: 'none', padding: 0 }}>
         {books.length > 0 ? (
           books.map((book) => (
-            <li key={book.id} style={{ marginBottom: '10px' }}>
-              <a href={`/books/${book.id}`}>{book.title}</a> - {book.yearPublished} - ${book.price}
+            <li key={book.id} style={{ marginBottom: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <a href={`/books/${book.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>{book.title}</a> - {book.yearPublished} - ${book.price}
               <Button variant="contained" color="error" onClick={() => setDeleteBookModalOpen(book.id)} style={{ marginLeft: '10px' }}>
                 Supprimer
               </Button>
@@ -180,17 +178,11 @@ const AuthorDetailPage: React.FC = () => {
           <Typography variant="h6" gutterBottom>Ajouter un nouveau livre</Typography>
           <div>
             <label htmlFor="newBookTitle">Titre du livre</label>
-            <input type="text" id="newBookTitle" style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} 
-            className="border p-2 w-full rounded"
-            />
+            <input type="text" id="newBookTitle" style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} className="border p-2 w-full rounded" />
             <label htmlFor="newBookYear">Année de publication</label>
-            <input type="number" id="newBookYear" style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} 
-            className="border p-2 w-full rounded"
-            />
+            <input type="number" id="newBookYear" style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} className="border p-2 w-full rounded" />
             <label htmlFor="newBookPrice">Prix</label>
-            <input type="number" id="newBookPrice" style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} 
-            className="border p-2 w-full rounded"
-            />
+            <input type="number" id="newBookPrice" style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} className="border p-2 w-full rounded" />
           </div>
           <Button variant="contained" color="primary" onClick={handleAddBook} sx={{ mt: 2 }}>
             Ajouter
@@ -202,7 +194,7 @@ const AuthorDetailPage: React.FC = () => {
       </Modal>
       <Modal open={deleteAuthorModalOpen} onClose={() => setDeleteAuthorModalOpen(false)}>
         <Box sx={modalStyle}>
-          <Typography variant="h6">Êtes-vous sûr de vouloir supprimer cet auteur ?</Typography>
+          <Typography variant="h6" gutterBottom>Êtes-vous sûr de vouloir supprimer cet auteur ?</Typography>
           <Button variant="contained" color="error" onClick={handleDeleteAuthor} sx={{ mr: 2 }}>
             Oui
           </Button>
@@ -213,7 +205,7 @@ const AuthorDetailPage: React.FC = () => {
       </Modal>
       <Modal open={!!deleteBookModalOpen} onClose={() => setDeleteBookModalOpen(null)}>
         <Box sx={modalStyle}>
-          <Typography variant="h6">Êtes-vous sûr de vouloir supprimer ce livre ?</Typography>
+          <Typography variant="h6" gutterBottom>Êtes-vous sûr de vouloir supprimer ce livre ?</Typography>
           <Button variant="contained" color="error" onClick={() => deleteBookModalOpen && handleDeleteBook(deleteBookModalOpen)} sx={{ mr: 2 }}>
             Oui
           </Button>
@@ -224,24 +216,16 @@ const AuthorDetailPage: React.FC = () => {
       </Modal>
       <Modal open={editAuthorModalOpen} onClose={() => setEditAuthorModalOpen(false)}>
         <Box sx={modalStyle}>
-            <Typography variant="h6" gutterBottom>Modifier les informations de l'auteur</Typography>
+          <Typography variant="h6" gutterBottom>Modifier les informations de l'auteur</Typography>
           <div>
             <label htmlFor="editAuthorFirstName">Prénom</label>
-            <input type="text" id="editAuthorFirstName" defaultValue={author.firstName} style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} 
-            className="border p-2 w-full rounded"
-            />
+            <input type="text" id="editAuthorFirstName" defaultValue={author.firstName} style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} className="border p-2 w-full rounded" />
             <label htmlFor="editAuthorLastName">Nom</label>
-            <input type="text" id="editAuthorLastName" defaultValue={author.lastName} style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} 
-            className="border p-2 w-full rounded"
-            />
+            <input type="text" id="editAuthorLastName" defaultValue={author.lastName} style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} className="border p-2 w-full rounded" />
             <label htmlFor="editAuthorImageUrl">URL de l'image</label>
-            <input type="text" id="editAuthorImageUrl" defaultValue={author.imageUrl} style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} 
-            className="border p-2 w-full rounded"
-            />
+            <input type="text" id="editAuthorImageUrl" defaultValue={author.imageUrl} style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} className="border p-2 w-full rounded" />
             <label htmlFor="editAuthorBiography">Biographie</label>
-            <textarea id="editAuthorBiography" defaultValue={author.biography} style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} 
-            className="border p-2 w-full rounded"
-            />
+            <textarea id="editAuthorBiography" defaultValue={author.biography} style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} className="border p-2 w-full rounded" />
           </div>
           <Button variant="contained" color="primary" onClick={handleEditAuthor} sx={{ mt: 2 }}>
             Enregistrer

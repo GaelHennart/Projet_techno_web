@@ -26,10 +26,10 @@ export class UpdateAuthorDto {
   @IsOptional()
   @IsString()
   lastName?: string;
-
+  
   @IsOptional()
-  @IsUrl()
-  imageUrl?: string;
+  @IsString()
+  imageFile?: string;
 
   @IsOptional()
   @IsString()

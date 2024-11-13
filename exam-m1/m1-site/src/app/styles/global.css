@@ -1,3 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.bg-myBlue {
+    background-color: #3a86ff;
+  }
+  .bg-myPurple {
+    background-color: #8338ec;
+  }
+  .bg-myRed {
+    background-color: #ff006e;
+  }
+  .bg-myOrange {
+    background-color: #fb5607;
+  }
+  .bg-myYellow {
+    background-color: #ffbe0b;
+  }

@@ -3,34 +3,45 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Button, Drawer, List, ListItem, ListItemText, Modal, Typography } from '@mui/material';
-// import { getBookId, deleteBook, getBookReviews } from '../../../m1-api/';
+import axios from 'axios';
+import BookDetailsCard from '../../../components/books/bookDetailsCard';
 
 const BookDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
-    const [book, setBook] = useState<any>(null);
+    const [book, setBook] = useState<any>({});
     const [reviews, setReviews] = useState<any[]>([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
 
-    // useEffect(() => {
-    //     async function fetchBook() {
-    //         const bookData = await getBookId(id);
-    //         setBook(bookData);
-    //     }
+    
+    const fetchBook = async () => {
+        try {
+            const response = await axios.get(`http://localhost:3001/books/${id}`);
+            setBook(response.data);
+        } catch (error) {
+            console.error("Erreur lors de la récupération du livre :", error);
+        }
+    };
 
     //     async function fetchReviews() {
     //         const reviewsData = await getBookReviews(id);
     //         setReviews(reviewsData);
     //     }
+  
 
-    //     fetchBook();
-    //     fetchReviews();
-    // }, [id]);
+    useEffect(() => {
+        fetchBook();
+      }, [id]);
+    
 
-    // const handleDelete = async () => {
-    //     await deleteBook(id);
-    //     // Redirect or update state after deletion
-    // };
+    const handleDelete = async () => {
+        try {
+            await axios.delete(`http://localhost:3001/books/${book.id}`);
+            // Redirection ou mise à jour de l'état après la suppression
+        } catch (error) {
+            console.error("Erreur lors de la suppression du livre :", error);
+        }
+    };
 
     const toggleDrawer = (open: boolean) => () => {
         setDrawerOpen(open);
@@ -40,26 +51,20 @@ const BookDetailPage: React.FC = () => {
         setModalOpen(open);
     };
 
-    if (!book) return <div>Chargement...</div>;
-
     return (
         <div>
-            <Typography variant="h4">{book.title}</Typography>
-            <Typography variant="h6">Prix: ${book.price}</Typography>
-            <Typography variant="h6">Date de parution: {book.year}</Typography>
-            <Typography variant="h6">
-                Auteur: <Link to={`/authors/${book.author.id}`}>{book.author.name}</Link>
-            </Typography>
-            <Button variant="contained" color="secondary" onClick={toggleModal(true)}>
-                Supprimer le livre
-            </Button>
-            <Button variant="contained" onClick={toggleDrawer(true)}>
-                Voir les avis
-            </Button>
+            <BookDetailsCard
+                title={book.title}
+                price={book.price}
+                year={book.yearPublished}
+                author={book.authorId}
+                onDelete={toggleModal(true)}
+                onShowReviews={toggleDrawer(true)}
+            />
             <Modal open={modalOpen} onClose={toggleModal(false)}>
                 <div>
                     <Typography>Etes-vous sûr de vouloir supprimer ce livre</Typography>
-                    {/* <Button onClick={handleDelete}>Oui</Button> */}
+                    <Button onClick={handleDelete}>Oui</Button>
                     <Button onClick={toggleModal(false)}>Non</Button>
                 </div>
             </Modal>

@@ -3,30 +3,31 @@ import React, { useState } from 'react';
 interface AddBookModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddBook: (book: { title: string; publication_date: Date; author: string; book_image: string }) => void;
+  onAddBook: (book: { title: string; publication_date: string; authorId: string; book_image: string }) => void;
+  authors: { id: string; firstName: string; lastName: string }[];
 }
 
-const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onAddBook }) => {
+const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onAddBook, authors }) => {
   const [title, setTitle] = useState('');
   const [publication_date, setPublicationDate] = useState('');
   const [author, setAuthor] = useState('');
-  const [image, setImage] = useState<File | null>(null); // Nouvelle state pour l'image
+  const [image, setImage] = useState<File | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Convertir publication_date en objet Date
-    const publicationDate = new Date(publication_date);
+    const imageURL = image ? URL.createObjectURL(image) : '';
+    const authorId = authors.find((a) => `${a.firstName} ${a.lastName}` === author)?.id;
 
-    // Convertir l'image en URL (si une image est choisie)
-    const imageURL = image ? URL.createObjectURL(image) : "/images/salameche.png"; // Si aucune image n'est choisie, une image par défaut
-
-    // Appel de la fonction onAddBook avec les données du livre
-    onAddBook({ title, publication_date: publicationDate, author, book_image: imageURL });
-    onClose(); // Fermer la modale après l'ajout
+    if (authorId) {
+      onAddBook({ title, publication_date, authorId, book_image: imageURL });
+      onClose();
+    } else {
+      alert("Veuillez sélectionner un auteur valide.");
+    }
   };
 
-  if (!isOpen) return null; // Si la modale n'est pas ouverte, ne rien afficher
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
@@ -55,13 +56,19 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onAddBook 
           </div>
           <div className="mb-4">
             <label htmlFor="author" className="block mb-2">Auteur</label>
-            <input
-              type="text"
+            <select
               id="author"
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
               className="border p-2 w-full rounded"
-            />
+            >
+              <option value="">Sélectionnez un auteur</option>
+              {authors.map((author) => (
+                <option key={author.id} value={`${author.firstName} ${author.lastName}`}>
+                  {author.firstName} {author.lastName}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="mb-4">
             <label htmlFor="image" className="block mb-2">Image du livre</label>

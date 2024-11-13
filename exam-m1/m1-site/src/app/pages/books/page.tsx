@@ -5,66 +5,74 @@ import axios from "axios";
 import BookCard from "../../components/books/bookCard";
 import SearchBar from "../../components/searchBar";
 import BookSorter from "../../components/books/bookSorter";
-import BookModal from "../../components/books/bookModal";
+import AddBookModal from "../../components/books/bookModal";
+
+interface Author {
+  id: string;
+  firstName: string;
+  lastName: string;
+}
 
 interface Book {
   id: string;
   book_image: string;
   title: string;
-  author: string;
+  authorId: string;
   publishDate: string;
   rating: number;
 }
 
 const BooksPage = () => {
   const [books, setBooks] = useState<Book[]>([]);
+  const [authors, setAuthors] = useState<Author[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [sortedBooks, setSortedBooks] = useState<Book[]>([]);
 
   const fetchBooks = async () => {
     try {
       const response = await axios.get('http://localhost:3001/books');
       setBooks(response.data);
-      setSortedBooks(response.data);
     } catch (error) {
       console.error("Erreur lors de la récupération des livres:", error);
     }
   };
 
+  const fetchAuthors = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/authors');
+      setAuthors(response.data);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des auteurs:", error);
+    }
+  };
+
+  const handleAddBook = async (newBook: { title: string; publication_date: string; authorId: string; book_image: string }) => {
+    try {
+      const response = await axios.post('http://localhost:3001/books', newBook);
+      const addedBook = response.data;
+      setBooks((prevBooks) => [...prevBooks, addedBook]);
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout du livre:', error);
+    }
+  };
+
+  const getAuthorById = (authorId: string) => {
+    const author = authors.find((author) => author.id === authorId);
+    return author ? `${author.firstName} ${author.lastName}` : "Auteur inconnu";
+  };
+
   useEffect(() => {
     fetchBooks();
+    fetchAuthors();
   }, []);
 
-  const filteredBooks = sortedBooks.filter((book) =>
+  const filteredBooks = books.filter((book) =>
     book.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
-  };
-
-  const handleSort = (sorted: Book[]) => {
-    setSortedBooks(sorted);
-  };
-
-  const handleAddBook = (newBook: { title: string; publication_date: Date; author: string; book_image: string }) => {
-    const newId = (books.length + 1).toString();
-    const newBookWithId: Book = {
-      id: newId,
-      title: newBook.title,
-      author: newBook.author,
-      publishDate: newBook.publication_date.toISOString(),
-      book_image: newBook.book_image,
-      rating: 0
-    };
-    setBooks((prevBooks) => {
-      const updatedBooks = [...prevBooks, newBookWithId];
-      setSortedBooks(updatedBooks);
-      return updatedBooks;
-    });
-  };
-
+  const handleSearch = (term: string) => setSearchTerm(term);
+  const handleSort = (sorted: Book[]) => setBooks(sorted);
   const toggleModal = () => setIsModalOpen((prev) => !prev);
 
   return (
@@ -73,18 +81,33 @@ const BooksPage = () => {
         <SearchBar onSearch={handleSearch} />
       </section>
       <section className="p-4 mt-5 flex justify-start">
-        <BookSorter books={books} onSort={handleSort} />
+          {/* <BookSorter books={books} onSort={handleSort} /> */}
         <button onClick={toggleModal} className="bg-blue-500 text-white p-2 rounded mt-4">Ajouter un livre</button>
       </section>
       <section className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 justify-items-center">
         {filteredBooks.map((book) => (
-          <BookCard key={book.id} book={book} />
+          <BookCard
+            key={book.id}
+            book={{
+              ...book,
+              author: getAuthorById(book.authorId)
+            }}
+          />
         ))}
       </section>
-      <BookModal
+      <AddBookModal
         isOpen={isModalOpen}
         onClose={toggleModal}
-        onAddBook={handleAddBook}
+        onAddBook={(newBook) =>
+          handleAddBook({
+            ...newBook,
+            title: newBook.title,
+            publication_date: newBook.publication_date,
+            authorId: newBook.authorId,
+            book_image: newBook.book_image,
+          })
+        }
+        authors={authors}
       />
     </>
   );

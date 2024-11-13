@@ -14,17 +14,13 @@
     "/pages/books/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
+      "static/css/app/pages/books/page.css",
       "static/chunks/app/pages/books/page.js"
     ],
-    "/pages/books/[id]/page": [
+    "/_not-found/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/pages/books/[id]/page.js"
-    ],
-    "/pages/authors/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/pages/authors/page.js"
+      "static/chunks/app/_not-found/page.js"
     ]
   }
 }

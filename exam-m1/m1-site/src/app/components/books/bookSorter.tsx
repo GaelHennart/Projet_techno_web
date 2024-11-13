@@ -23,7 +23,7 @@ const BookSorter: React.FC<BookSorterProps> = ({ books, onSort }) => {
   const sortBooks = (option: string) => {
     setSelectedOption(option);
     setIsOpen(false);
-
+  
     let sorted = [...books];
     switch (option) {
       case 'title-asc':
@@ -33,7 +33,11 @@ const BookSorter: React.FC<BookSorterProps> = ({ books, onSort }) => {
         sorted.sort((a, b) => b.title.localeCompare(a.title));
         break;
       case 'author':
-        sorted.sort((a, b) => a.author.localeCompare(b.author));
+        sorted.sort((a, b) => {
+          const authorA = a.author || '';  // Si author est undefined, utiliser une chaîne vide
+          const authorB = b.author || '';  // Idem pour b.author
+          return authorA.localeCompare(authorB);
+        });
         break;
       case 'rating':
         sorted.sort((a, b) => b.rating - a.rating);
@@ -41,9 +45,10 @@ const BookSorter: React.FC<BookSorterProps> = ({ books, onSort }) => {
       default:
         break;
     }
-
+  
     onSort(sorted); // Transmet les livres triés à BooksPage
   };
+  
 
   const toggleMenu = () => setIsOpen(!isOpen);
 

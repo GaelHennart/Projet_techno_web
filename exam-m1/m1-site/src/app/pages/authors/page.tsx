@@ -1,8 +1,8 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import AuthorItem from '../../Components/AuthorCard';
+import AuthorItem from '../../Components/Authors/AuthorCard';
 import SearchBar from '../../Components/SearchBar';
-import AddAuthorModal from '../../Components/AuthorModale';
+import AddAuthorModal from '../../Components/Authors/AuthorModale';
 import { Author } from '../../../../../m1-api/src/modules/authors/author.model';
 import axios from 'axios';
 

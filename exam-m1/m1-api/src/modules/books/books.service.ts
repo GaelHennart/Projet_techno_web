@@ -34,7 +34,9 @@ export class BooksService {
 }
 
   public async update(id: string, updateBookDto: UpdateBookDto) {
-    return this.booksRepository.update(id, updateBookDto);
+    const { authorId, ...otherData } = updateBookDto;
+    const bookData = { ...otherData, authorId: Number(authorId) };
+    return this.booksRepository.update(id, bookData);
   }
 
   public async remove(id: string) {

@@ -153,7 +153,7 @@ const AuthorDetailPage: React.FC = () => {
         {books.length > 0 ? (
           books.map((book) => (
             <li key={book.id} style={{ marginBottom: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <a href={`/books/${book.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>{book.title}</a> - {book.yearPublished} - ${book.price}
+              <a href={`/pages/books/${book.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>{book.title}</a> - {book.yearPublished} - ${book.price}
               <Button variant="contained" color="error" onClick={() => setDeleteBookModalOpen(book.id)} style={{ marginLeft: '10px' }}>
                 Supprimer
               </Button>

@@ -1,3 +1,5 @@
+import { Author } from '../authors/author.model';
+
 export interface Book {
   id: string;
   title: string;
@@ -5,4 +7,5 @@ export interface Book {
   price: number;
   authorId: string;
   average: number;
+  author?: Author;
 }

@@ -23,7 +23,7 @@ const BookCard: React.FC<{ book: Book }> = ({ book }) => {
             </div>
             <div className="flex flex-col justify-between h-20">
                 <p className="text-sm text-gray-600" style={{ fontFamily: 'Pacifico, cursive' }}>
-                    Par {book.authorId ? book.authorId : 'Unknown Author'}
+                    Par {book.author ? `${book.author.firstName} ${book.author.lastName}` : 'Unknown Author'}
                 </p>
                 <p className="text-sm text-gray-600" style={{ fontFamily: 'Pacifico, cursive' }}>
                     Publié le : {book.yearPublished}

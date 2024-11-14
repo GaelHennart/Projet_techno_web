@@ -5,7 +5,7 @@ interface AddAuthorModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddAuthor: (author: {
-    biography: string; firstName: string; lastName: string; photo: string 
+    biography: string; firstName: string; lastName: string; imageUrl: string 
 }) => void;
 }
 
@@ -13,7 +13,7 @@ const AddAuthorModal: React.FC<AddAuthorModalProps> = ({ isOpen, onClose, onAddA
   // États pour les champs firstName, lastName et photo
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [photo, setPhoto] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
 
   // États pour afficher les erreurs
   const [firstNameError, setFirstNameError] = useState('');
@@ -49,13 +49,13 @@ const AddAuthorModal: React.FC<AddAuthorModalProps> = ({ isOpen, onClose, onAddA
     if (validateForm()) {
       // Si tout est valide, appeler la fonction pour ajouter l'auteur
       onAddAuthor({
-        firstName, lastName, photo, biography: ''
+        firstName, lastName, imageUrl, biography: ''
       });
 
       // Réinitialiser les champs
       setFirstName('');
       setLastName('');
-      setPhoto('');
+      setImageUrl('');
     }
   };
 
@@ -89,23 +89,18 @@ const AddAuthorModal: React.FC<AddAuthorModalProps> = ({ isOpen, onClose, onAddA
               className="border p-2 w-full rounded"
             />
             {lastNameError && <p className="text-red-500 text-sm">{lastNameError}</p>} {/* Message d'erreur */}
-          </div>
 
           {/* Champ photo */}
+          </div>
           <div className="mb-4">
-            <label htmlFor="photo" className="block mb-2">URL de la photo</label>
+            <label htmlFor="imageURL" className="block mb-2">URL de l'image du livre</label>
             <input
               type="text"
-              id="photo"
-              value={photo}
-              onChange={(e) => setPhoto(e.target.value)}
+              id="imageURL"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
               className="border p-2 w-full rounded"
             />
-            {photo && (
-              <div className="mt-2">
-                <img src={photo} alt="Preview" className="w-full h-32 object-cover" />
-              </div>
-            )}
           </div>
           {/* Boutons d'action */}
           <div className="flex justify-between">

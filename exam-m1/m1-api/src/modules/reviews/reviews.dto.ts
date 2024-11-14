@@ -13,7 +13,11 @@ export class CreateReviewDto {
 
   @IsNotEmpty()
   @IsUUID()
-  bookId: string;  
+  bookId: string;
+  
+  @IsOptional()
+  @IsString()
+  created_at: string;
 }
 
 export class UpdateReviewDto {

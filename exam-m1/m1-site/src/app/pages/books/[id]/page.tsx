@@ -248,10 +248,9 @@ const BookDetailPage: React.FC = () => {
           />
           <TextField
             label="Date de l'avis"
-            type="date"
+            type="string"
             fullWidth
             margin="normal"
-            InputLabelProps={{ shrink: true }}
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />

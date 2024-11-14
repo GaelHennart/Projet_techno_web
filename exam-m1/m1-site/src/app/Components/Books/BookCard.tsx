@@ -39,13 +39,15 @@ const BookCard: React.FC<{ book: Book, averageRating: number }> = ({ book, avera
 
                 {/* Publication Year */}
                 <p className="text-sm text-gray-600" style={{ fontFamily: 'Pacifico, cursive' }}>
-                    Publié le : {book.yearPublished}
+                    Publié en : {book.yearPublished}
                 </p>
 
                 {/* Average Rating */}
                 <div className="flex items-center" style={{ fontFamily: 'Roboto Condensed, sans-serif' }}>
-                    <span className="text-yellow-500 font-bold text-lg mr-1">{averageRating.toFixed(1)}</span>
-                    <span className="text-sm text-gray-500">/ 5</span>
+                <span className="text-yellow-500 font-bold text-lg mr-1">
+                    {averageRating != null && !isNaN(averageRating) ? averageRating.toFixed(1) : 'N/A'}
+                </span>
+                <span className="text-sm text-gray-500">/ 5</span>
                 </div>
             </div>
         </Link>

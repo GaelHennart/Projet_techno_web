@@ -2,7 +2,7 @@ export class Review {
     id: string;
     reviews_description: string;
     mark: number;
-    createdAt: Date;
+    createdAt: String;
     bookId: string;
   }
   

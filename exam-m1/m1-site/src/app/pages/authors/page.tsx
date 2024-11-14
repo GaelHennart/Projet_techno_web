@@ -30,11 +30,12 @@ const AuthorsPage: React.FC = () => {
   );
 
   // Fonction pour ajouter un nouvel auteur et l'envoyer à l'API
-  const handleAddAuthor = async (newAuthor: { firstName: string; lastName: string; photo: string; biography: string; averageRating: number; bookCount: number }) => {
+  const handleAddAuthor = async (newAuthor: { firstName: string; lastName:string; biography: string; averageRating: number; bookCount: number }) => {
     try {
       const response = await axios.post('http://localhost:3001/authors', newAuthor);
-      const addedAuthor = response.data;
-      setAuthors((prevAuthors) => [...prevAuthors, addedAuthor]);
+      // Récupère la liste complète des auteurs après ajout pour s'assurer que tout est bien synchronisé
+      const updatedAuthorsResponse = await axios.get('http://localhost:3001/authors');
+      setAuthors(updatedAuthorsResponse.data); // Met à jour la liste avec les données les plus récentes
       setIsModalOpen(false);
     } catch (error) {
       console.error('Error adding author:', error);
@@ -85,7 +86,6 @@ const AuthorsPage: React.FC = () => {
             lastName: newAuthor.lastName,
             averageRating: 0,
             bookCount: 0,
-            biography: newAuthor.biography
           })
         }
       />

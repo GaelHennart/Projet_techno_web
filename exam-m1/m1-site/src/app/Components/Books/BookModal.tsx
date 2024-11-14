@@ -4,33 +4,55 @@ interface AddBookModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddBook: (book: {
-      price: number;
-      yearPublished: number; title: string; authorId: string; book_image: string 
-}) => void;
+    price: number;
+    yearPublished: number;
+    title: string;
+    authorId: string;
+    book_image: string;
+    averageRating?: number;
+  }) => void;
   authors: { id: string; firstName: string; lastName: string }[];
 }
 
 const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onAddBook, authors }) => {
   const [title, setTitle] = useState('');
-  const [publication_date, setPublicationDate] = useState('');
+  const [yearPublished, setYearPublished] = useState<number | ''>(''); // Year only input
   const [author, setAuthor] = useState('');
-  const yearPublished = new Date(publication_date).getFullYear();
   const [imageURL, setImageURL] = useState('');
+  const [price, setPrice] = useState<number>(0);
+
+  // Function to reset all fields
+  const resetForm = () => {
+    setTitle('');
+    setYearPublished('');
+    setAuthor('');
+    setImageURL('');
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     const authorId = authors.find((a) => `${a.firstName} ${a.lastName}` === author)?.id;
 
-    if (authorId) {
+    if (authorId && yearPublished) {
       onAddBook({
-        title, yearPublished, authorId, book_image: imageURL,
-        price: 0
+        title,
+        yearPublished,
+        authorId,
+        book_image: imageURL,
+        price,
+        averageRating: 0,
       });
+      resetForm(); // Reset fields after successful submit
       onClose();
     } else {
-      alert("Veuillez sélectionner un auteur valide.");
+      alert('Veuillez sélectionner un auteur valide et entrer une année.');
     }
+  };
+
+  const handleCancel = () => {
+    resetForm(); // Reset fields on cancel
+    onClose();
   };
 
   if (!isOpen) return null;
@@ -47,16 +69,21 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onAddBook,
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="border p-2 w-full rounded" />
+              className="border p-2 w-full rounded"
+            />
           </div>
           <div className="mb-4">
-            <label htmlFor="publication_date" className="block mb-2">Date de publication</label>
+            <label htmlFor="yearPublished" className="block mb-2">Année de publication</label>
             <input
-              type="date"
-              id="publication_date"
-              value={publication_date}
-              onChange={(e) => setPublicationDate(e.target.value)}
-              className="border p-2 w-full rounded" />
+              type="number"
+              id="yearPublished"
+              value={yearPublished || ''} // Prevent NaN
+              onChange={(e) => setYearPublished(parseInt(e.target.value) || '')}
+              className="border p-2 w-full rounded"
+              min="1000"
+              max="9999"
+              placeholder="YYYY"
+            />
           </div>
           <div className="mb-4">
             <label htmlFor="author" className="block mb-2">Auteur</label>
@@ -81,10 +108,22 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onAddBook,
               id="imageURL"
               value={imageURL}
               onChange={(e) => setImageURL(e.target.value)}
-              className="border p-2 w-full rounded" />
+              className="border p-2 w-full rounded"
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="price" className="block mb-2">Prix</label>
+            <input
+              type="number"
+              id="price"
+              value={price}
+              onChange={(e) => setPrice(parseFloat(e.target.value) || 0)}
+              className="border p-2 w-full rounded"
+              step="0.01"
+            />
           </div>
           <div className="flex justify-between">
-            <button type="button" onClick={onClose} className="bg-gray-300 p-2 rounded">
+            <button type="button" onClick={handleCancel} className="bg-gray-300 p-2 rounded">
               Annuler
             </button>
             <button type="submit" className="bg-blue-500 text-white p-2 rounded">

@@ -10,9 +10,10 @@ import BookSorter from '../../Components/Books/BookSorter';
 const BooksPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [books, setBooks] = useState<Book[]>([]);
+  const [authors, setAuthors] = useState([]); // État pour stocker les auteurs
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Initial loading of books from the API with average ratings
+  // Chargement des livres
   useEffect(() => {
     const fetchBooks = async () => {
       try {
@@ -25,7 +26,7 @@ const BooksPage: React.FC = () => {
               ? reviews.reduce((sum: number, review: any) => sum + review.mark, 0) / reviews.length
               : 0;
 
-            return { ...book, averageRating }; // Add averageRating property to each book
+            return { ...book, averageRating };
           })
         );
         setBooks(booksWithRatings);
@@ -36,12 +37,26 @@ const BooksPage: React.FC = () => {
     fetchBooks();
   }, []);
 
-  // Filter books based on search term
+  // Chargement des auteurs
+  useEffect(() => {
+    const fetchAuthors = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/authors');
+        setAuthors(response.data);
+      } catch (error) {
+        console.error('Error fetching authors:', error);
+      }
+    };
+
+    fetchAuthors();
+  }, []);
+
+  // Filtrer les livres
   const filteredBooks = books.filter((book) =>
     book.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Function to add a new book and post it to the API
+  // Ajouter un nouveau livre
   const handleAddBook = async (newBook: { title: string; yearPublished: number; price: number; authorId: string; averageRating: number }) => {
     try {
       const response = await axios.post('http://localhost:3001/books', newBook);
@@ -53,35 +68,35 @@ const BooksPage: React.FC = () => {
     }
   };
 
-  // Toggle modal open/close state
+  // Gérer l'ouverture/fermeture du modal
   const toggleModal = () => setIsModalOpen((prev) => !prev);
 
-  // Update search term
+  // Mettre à jour le terme de recherche
   const handleSearch = (term: string) => setSearchTerm(term);
 
-  // Handle sorting of books
+  // Gérer le tri des livres
   const handleSort = (sortedBooks: Book[]) => {
-    setBooks(sortedBooks); // Update books with the sorted list
+    setBooks(sortedBooks);
   };
 
   return (
     <>
-      {/* Search Bar */}
+      {/* Barre de recherche */}
       <div className="w-full max-w-md mx-auto">
         <SearchBar onSearch={handleSearch} />
       </div>
 
-      {/* Book Sorter */}
+      {/* Tri des livres */}
       <div className="w-full max-w-md mx-auto mt-4">
         <BookSorter books={filteredBooks} onSort={handleSort} />
       </div>
 
-      {/* Message if no books found */}
+      {/* Message si aucun livre n'est trouvé */}
       {filteredBooks.length === 0 && searchTerm && (
         <p className="text-black mt-4 text-center">Aucun livre trouvé pour "{searchTerm}"</p>
       )}
 
-      {/* Button to add a book */}
+      {/* Bouton pour ajouter un livre */}
       <button
         onClick={toggleModal}
         className="bg-blue-500 text-white p-2 rounded mt-4"
@@ -89,17 +104,16 @@ const BooksPage: React.FC = () => {
         Ajouter un livre
       </button>
 
-      {/* List of books */}
+      {/* Liste des livres */}
       <div className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 justify-items-center">
         {filteredBooks.map((book) => (
           <div key={book.id} className="flex flex-col items-center">
-            {/* Pass the average rating to BookItem */}
             <BookItem book={book} averageRating={book.averageRating} />
           </div>
         ))}
       </div>
 
-      {/* Add Book Modal */}
+      {/* Modale pour ajouter un livre */}
       <AddBookModal
         isOpen={isModalOpen}
         onClose={toggleModal}
@@ -110,7 +124,9 @@ const BooksPage: React.FC = () => {
           price: newBook.price,
           authorId: newBook.authorId,
           averageRating: 0,
-        })} authors={[]} />
+        })}
+        authors={authors} // Passer les auteurs à AddBookModal
+      />
     </>
   );
 };

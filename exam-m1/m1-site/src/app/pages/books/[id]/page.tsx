@@ -52,7 +52,7 @@ const BookDetailPage: React.FC = () => {
       });
 
     // Fetch reviews for the book
-    axios.get(`http://localhost:3001/reviews?bookId=${bookId}`)
+    axios.get(`http://localhost:3001/reviews/book/${bookId}`)
       .then((response) => {
         setReviews(response.data);
       })
@@ -62,11 +62,15 @@ const BookDetailPage: React.FC = () => {
   }, [bookId]);
 
   // Sort reviews by date
-  const sortedReviews = reviews.sort((a, b) => {
-    const dateA = new Date(a.createdAt).getTime();
-    const dateB = new Date(b.createdAt).getTime();
-    return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
-  });
+  const sortedReviews = reviews
+    .sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+    });
+
+  if (error) return <div>{error}</div>;
+  if (!book) return <div>Chargement...</div>;
 
   const handleDeleteBook = async () => {
     try {
@@ -187,6 +191,8 @@ const BookDetailPage: React.FC = () => {
             <SortIcon />
           </IconButton>
           <div style={{ marginTop: '20px' }}>
+            {/* Vérifiez les avis affichés */}
+
             {sortedReviews.length > 0 ? (
               sortedReviews.map((review, index) => (
                 <Box key={index} sx={{ border: '1px solid #ccc', borderRadius: '5px', padding: '10px', marginBottom: '10px' }}>

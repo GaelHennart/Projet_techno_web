@@ -33,6 +33,7 @@ const BookDetailPage: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false); // State to manage the Drawer visibility
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc'); // Sort order for reviews
   const [date, setDate] = useState<string>(''); // Date entrée par l'utilisateur
+  const [averageRating, setAverageRating] = useState<number>(0); // State to store the average rating
 
   useEffect(() => {
     if (!bookId) {
@@ -55,6 +56,10 @@ const BookDetailPage: React.FC = () => {
     axios.get(`http://localhost:3001/reviews/book/${bookId}`)
       .then((response) => {
         setReviews(response.data);
+        // Calculate average rating
+        const totalRating = response.data.reduce((sum: number, review: { mark: any; }) => sum + review.mark, 0);
+        const average = response.data.length > 0 ? totalRating / response.data.length : 0;
+        setAverageRating(average); // Store the average rating
       })
       .catch((error) => {
         console.error('Error fetching reviews:', error);
@@ -113,19 +118,19 @@ const BookDetailPage: React.FC = () => {
       alert("Veuillez sélectionner une note.");
       return;
     }
-  
+
     if (!date) { // Vérification si la date est vide
       alert("Veuillez entrer une date.");
       return;
     }
-  
+
     const newReview = {
       mark: rating,
       reviews_description: comment || '', // Si aucun commentaire n'est fourni, on envoie une chaîne vide
       bookId: bookId, // Le bookId est déjà défini
       createdAt: new Date(date), // Passer la date sélectionnée
     };
-  
+
     try {
       await axios.post(`http://localhost:3001/reviews`, newReview);
       setReviewModalOpen(false);
@@ -135,11 +140,14 @@ const BookDetailPage: React.FC = () => {
       // Optionnellement, vous pouvez récupérer à nouveau les avis pour mettre à jour l'interface
       const response = await axios.get(`http://localhost:3001/reviews?bookId=${bookId}`);
       setReviews(response.data); // Mettre à jour les avis
+      // Recalculer la moyenne après ajout du nouvel avis
+      const totalRating = response.data.reduce((sum: number, review: { mark: any; }) => sum + review.mark, 0);
+      const average = response.data.length > 0 ? totalRating / response.data.length : 0;
+      setAverageRating(average);
     } catch (error) {
       console.error('Erreur lors de l\'ajout de l\'avis :', error);
     }
   };
-  
 
   if (error) return <div>{error}</div>;
   if (!book) return <div>Chargement...</div>;
@@ -147,15 +155,13 @@ const BookDetailPage: React.FC = () => {
   return (
     <div style={{ textAlign: 'center', padding: '20px' }}>
       <Typography variant="h4" gutterBottom>{book.title}</Typography>
-      {/* Ajout de l'affichage de l'auteur */}
       <div className="flex flex-col justify-between h-20">
         <p className="text-lg text-gray-600" style={{ fontFamily: 'Pacifico, cursive' }}>
           Par{" "}
-          {/* Utiliser Link pour rendre le nom de l'auteur cliquable */}
           {book.author && (
-        <a href={`/pages/authors/${book.author.id}`} style={{ cursor: 'pointer', color: '#inherit' }}>
-          {book.author ? `${book.author.firstName} ${book.author.lastName}` : 'Auteur inconnu'}
-        </a>
+            <a href={`/pages/authors/${book.author.id}`} style={{ cursor: 'pointer', color: '#inherit' }}>
+              {book.author ? `${book.author.firstName} ${book.author.lastName}` : 'Auteur inconnu'}
+            </a>
           )}
         </p>
       </div>
@@ -164,6 +170,11 @@ const BookDetailPage: React.FC = () => {
       </Typography>
       <Typography variant="body1" style={{ marginBottom: '20px' }}>
         Prix: ${book.price}
+      </Typography>
+
+      {/* Affichage de la moyenne des avis */}
+      <Typography variant="body1" style={{ marginBottom: '20px' }}>
+        Moyenne des avis: {averageRating.toFixed(1)} / 5
       </Typography>
 
       <Button variant="contained" color="secondary" onClick={() => setDeleteBookModalOpen(true)} style={{ margin: '10px' }}>
@@ -196,94 +207,116 @@ const BookDetailPage: React.FC = () => {
             {sortedReviews.length > 0 ? (
               sortedReviews.map((review, index) => (
                 <Box key={index} sx={{ border: '1px solid #ccc', borderRadius: '5px', padding: '10px', marginBottom: '10px' }}>
-                  <Rating value={review.mark} readOnly size="small" />
-                  <Typography variant="body2" style={{ marginTop: '5px' }}>
-                    {review.reviews_description || 'Pas de commentaire'}
+                  <Rating value={review.mark} readOnly />
+                  <Typography variant="body2" style={{ marginBottom: '10px' }}>
+                    {review.reviews_description}
                   </Typography>
-                  <Typography variant="caption" color="textSecondary" style={{ marginTop: '5px' }}>
+                  <Typography variant="body2" color="textSecondary">
                     {new Date(review.createdAt).toLocaleDateString()}
                   </Typography>
                 </Box>
               ))
             ) : (
-              <Typography variant="body2" color="textSecondary">Aucun avis pour ce livre.</Typography>
+              <Typography variant="body2">Aucun avis disponible.</Typography>
             )}
           </div>
         </Box>
       </Drawer>
 
-      {/* Modal pour édition */}
-      <Modal open={editBookModalOpen} onClose={() => setEditBookModalOpen(false)}>
+      {/* Modal for editing book */}
+      <Modal
+        open={editBookModalOpen}
+        onClose={() => setEditBookModalOpen(false)}
+        aria-labelledby="edit-book-modal"
+        aria-describedby="edit-book-description"
+      >
         <Box sx={modalStyle}>
-          <Typography variant="h6" gutterBottom>Modifier les informations du livre</Typography>
-          <div>
-            <label htmlFor="editBookTitle">Titre</label>
-            <input type="text" id="editBookTitle" defaultValue={book.title} style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} className="border p-2 w-full rounded" />
-            <label htmlFor="editBookYear">Année de publication</label>
-            <input type="number" id="editBookYear" defaultValue={book.yearPublished} style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} className="border p-2 w-full rounded" />
-            <label htmlFor="editBookPrice">Prix</label>
-            <input type="number" id="editBookPrice" defaultValue={book.price} style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} className="border p-2 w-full rounded" />
-          </div>
-          <Button variant="contained" color="primary" onClick={handleEditBook} sx={{ mt: 2 }}>
+          <Typography variant="h6" gutterBottom>Modifier le livre</Typography>
+          <TextField
+            id="editBookTitle"
+            label="Titre"
+            defaultValue={book.title}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            id="editBookYear"
+            label="Année de publication"
+            defaultValue={book.yearPublished}
+            fullWidth
+            margin="normal"
+            type="number"
+          />
+          <TextField
+            id="editBookPrice"
+            label="Prix"
+            defaultValue={book.price}
+            fullWidth
+            margin="normal"
+            type="number"
+          />
+          <Button onClick={handleEditBook} variant="contained" color="primary" style={{ marginTop: '20px' }}>
             Enregistrer
           </Button>
-          <Button variant="outlined" onClick={() => setEditBookModalOpen(false)} sx={{ mt: 2 }}>
+        </Box>
+      </Modal>
+
+      {/* Modal for deleting book */}
+      <Modal
+        open={deleteBookModalOpen}
+        onClose={() => setDeleteBookModalOpen(false)}
+        aria-labelledby="delete-book-modal"
+        aria-describedby="delete-book-description"
+      >
+        <Box sx={modalStyle}>
+          <Typography variant="h6" gutterBottom>Confirmer la suppression</Typography>
+          <Typography variant="body1">
+            Êtes-vous sûr de vouloir supprimer ce livre ?
+          </Typography>
+          <Button onClick={handleDeleteBook} variant="contained" color="error" style={{ marginTop: '20px' }}>
+            Supprimer
+          </Button>
+          <Button onClick={() => setDeleteBookModalOpen(false)} variant="contained" color="inherit" style={{ marginTop: '20px' }}>
             Annuler
           </Button>
         </Box>
       </Modal>
 
-      {/* Modal pour suppression */}
-      <Modal open={deleteBookModalOpen} onClose={() => setDeleteBookModalOpen(false)}>
-        <Box sx={modalStyle}>
-          <Typography variant="h6" gutterBottom>Êtes-vous sûr de vouloir supprimer ce livre ?</Typography>
-          <Button variant="contained" color="error" onClick={handleDeleteBook} sx={{ mr: 2 }}>
-            Oui
-          </Button>
-          <Button variant="outlined" onClick={() => setDeleteBookModalOpen(false)}>
-            Non
-          </Button>
-        </Box>
-      </Modal>
-
-      {/* Modal pour ajouter un avis */}
-      <Modal open={reviewModalOpen} onClose={() => setReviewModalOpen(false)}>
+      {/* Modal for adding review */}
+      <Modal
+        open={reviewModalOpen}
+        onClose={() => setReviewModalOpen(false)}
+        aria-labelledby="add-review-modal"
+        aria-describedby="add-review-description"
+      >
         <Box sx={modalStyle}>
           <Typography variant="h6" gutterBottom>Ajouter un avis</Typography>
-          <div>
-            <Rating
-              value={rating}
-              onChange={(event, newValue) => setRating(newValue)}
-              precision={0.5}
-              size="large"
-            />
-          </div>
+          <Rating
+            name="rating"
+            value={rating || 0}
+            onChange={(event, newValue) => setRating(newValue)}
+            max={5}
+          />
+          <TextField
+            label="Commentaire"
+            multiline
+            rows={4}
+            fullWidth
+            margin="normal"
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+          />
           <TextField
             label="Date de l'avis"
             type="date"
             fullWidth
+            margin="normal"
+            InputLabelProps={{ shrink: true }}
             value={date}
-            onChange={(e) => setDate(e.target.value)} // Mise à jour de l'état `date`
-            InputLabelProps={{
-              shrink: true,
-            }}
+            onChange={(e) => setDate(e.target.value)}
           />
-          <div style={{ marginTop: '10px' }}>
-            <TextField
-              label="Commentaire (optionnel)"
-              multiline
-              rows={4}
-              variant="outlined"
-              fullWidth
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-            />
-          </div>
-          <Button variant="contained" color="primary" onClick={handleAddReview} sx={{ mt: 2 }}>
+          <Button onClick={handleAddReview} variant="contained" color="primary" style={{ marginTop: '20px' }}>
             Ajouter l'avis
-          </Button>
-          <Button variant="outlined" onClick={() => setReviewModalOpen(false)} sx={{ mt: 2 }}>
-            Annuler
           </Button>
         </Box>
       </Modal>

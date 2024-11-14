@@ -5,7 +5,7 @@ import Link from 'next/link';
 import '../../styles/global.css';
 import { Book } from '../../../../../m1-api/src/modules/books/books.model';
 
-const BookCard: React.FC<{ book: Book }> = ({ book }) => {
+const BookCard: React.FC<{ book: Book, averageRating: number }> = ({ book, averageRating  }) => {
 
     return (
         <Link
@@ -29,7 +29,7 @@ const BookCard: React.FC<{ book: Book }> = ({ book }) => {
                     Publié le : {book.yearPublished}
                 </p>
                 <div className="flex items-center" style={{ fontFamily: 'Roboto Condensed, sans-serif' }}>
-                    <span className="text-yellow-500 font-bold text-lg mr-1">{book.average}</span>
+                    <span className="text-yellow-500 font-bold text-lg mr-1">{averageRating.toFixed(1)}</span>
                     <span className="text-sm text-gray-500">/ 5</span>
                 </div>
             </div>

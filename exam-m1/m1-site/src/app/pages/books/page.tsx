@@ -17,7 +17,18 @@ const BooksPage: React.FC = () => {
     const fetchBooks = async () => {
       try {
         const response = await axios.get('http://localhost:3001/books');
-        setBooks(response.data);
+        const booksWithRatings = await Promise.all(
+          response.data.map(async (book: Book) => {
+            const reviewsResponse = await axios.get(`http://localhost:3001/reviews/book/${book.id}`);
+            const reviews = reviewsResponse.data;
+            const averageRating = reviews.length > 0
+              ? reviews.reduce((sum: number, review: any) => sum + review.mark, 0) / reviews.length
+              : 0;
+
+            return { ...book, averageRating };
+          })
+        );
+        setBooks(booksWithRatings);
       } catch (error) {
         console.error('Error fetching books:', error);
       }
@@ -81,9 +92,13 @@ const BooksPage: React.FC = () => {
       {/* List of books */}
       <div className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 justify-items-center">
         {filteredBooks.map((book) => (
-          <BookItem key={book.id} book={book} />
+          <div key={book.id} className="flex flex-col items-center">
+            {/* Passer la moyenne des avis à BookItem */}
+            <BookItem book={book} averageRating={book.average} />
+          </div>
         ))}
       </div>
+
 
       {/* Add Book Modal */}
       <AddBookModal

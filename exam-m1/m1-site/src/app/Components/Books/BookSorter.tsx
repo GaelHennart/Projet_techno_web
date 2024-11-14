@@ -32,7 +32,7 @@ const BookSorter: React.FC<BookSorterProps> = ({ books, onSort }) => {
         });
         break;
       case 'rating':
-        sorted.sort((a, b) => b.average - a.average);
+        sorted.sort((a, b) => b.averageRating - a.averageRating);
         break;
       default:
         break;

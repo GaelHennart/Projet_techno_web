@@ -8,7 +8,8 @@ export class BookPresenter {
       yearPublished: book.yearPublished,
       price: book.price,
       authorId: book.authorId,
-      average: book.average,
+      average: book.averageRating,
+      book_image: book.book_image,
     };
   }
 
@@ -20,6 +21,7 @@ export class BookPresenter {
       price: book.price,
       authorId: book.author,
       average: book.average,
+      book_image: book.book_image,
     };
   }
 

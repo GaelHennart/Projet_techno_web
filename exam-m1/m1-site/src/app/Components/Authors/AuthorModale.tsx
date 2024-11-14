@@ -10,18 +10,10 @@ interface AddAuthorModalProps {
 }
 
 const AddAuthorModal: React.FC<AddAuthorModalProps> = ({ isOpen, onClose, onAddAuthor }) => {
-  const [photo, setPhoto] = useState<File | null>(null);
-
-  // Fonction pour gérer le changement de fichier
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setPhoto(e.target.files[0]);
-    }
-  };
-
-  // États pour les champs firstName et lastName
+  // États pour les champs firstName, lastName et photo
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [photo, setPhoto] = useState('');
 
   // États pour afficher les erreurs
   const [firstNameError, setFirstNameError] = useState('');
@@ -57,14 +49,13 @@ const AddAuthorModal: React.FC<AddAuthorModalProps> = ({ isOpen, onClose, onAddA
     if (validateForm()) {
       // Si tout est valide, appeler la fonction pour ajouter l'auteur
       onAddAuthor({
-        firstName, lastName, photo: photo ? URL.createObjectURL(photo) : '',
-        biography: ''
+        firstName, lastName, photo, biography: ''
       });
 
       // Réinitialiser les champs
       setFirstName('');
       setLastName('');
-      setPhoto(null);
+      setPhoto('');
     }
   };
 
@@ -75,10 +66,10 @@ const AddAuthorModal: React.FC<AddAuthorModalProps> = ({ isOpen, onClose, onAddA
     <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded-lg w-80">
         <h2 className="text-xl mb-4">Ajouter un Auteur</h2>
-    <form onSubmit={handleSubmit}>
-        {/* Champ prénom */}
+        <form onSubmit={handleSubmit}>
+          {/* Champ prénom */}
           <label htmlFor="firstName" className="block mb-2">Prénom</label>
-            <input
+          <input
             type="text"
             id="firstName"
             value={firstName}
@@ -87,31 +78,32 @@ const AddAuthorModal: React.FC<AddAuthorModalProps> = ({ isOpen, onClose, onAddA
           />
           {firstNameError && <p className="text-red-500 text-sm">{firstNameError}</p>} {/* Message d'erreur */}
 
-        {/* Champ nom */}
-        <div className="mb-4">
-          <label htmlFor="lastName" className="block mb-2">Nom</label>
+          {/* Champ nom */}
+          <div className="mb-4">
+            <label htmlFor="lastName" className="block mb-2">Nom</label>
             <input
-            type="text"
-            id="lastName"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            className="border p-2 w-full rounded"
-          />
-          {lastNameError && <p className="text-red-500 text-sm">{lastNameError}</p>} {/* Message d'erreur */}
+              type="text"
+              id="lastName"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              className="border p-2 w-full rounded"
+            />
+            {lastNameError && <p className="text-red-500 text-sm">{lastNameError}</p>} {/* Message d'erreur */}
           </div>
 
           {/* Champ photo */}
           <div className="mb-4">
-            <label htmlFor="photo" className="block mb-2">Photo</label>
+            <label htmlFor="photo" className="block mb-2">URL de la photo</label>
             <input
-              type="file"
+              type="text"
               id="photo"
-              onChange={(e) => handleFileChange(e)}
+              value={photo}
+              onChange={(e) => setPhoto(e.target.value)}
               className="border p-2 w-full rounded"
             />
             {photo && (
               <div className="mt-2">
-                <img src={URL.createObjectURL(photo)} alt="Preview" className="w-full h-32 object-cover" />
+                <img src={photo} alt="Preview" className="w-full h-32 object-cover" />
               </div>
             )}
           </div>
@@ -136,5 +128,5 @@ const AddAuthorModal: React.FC<AddAuthorModalProps> = ({ isOpen, onClose, onAddA
     </div>
   );
 };
- 
+
 export default AddAuthorModal;

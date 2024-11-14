@@ -95,6 +95,7 @@ const AuthorDetailPage: React.FC = () => {
     const title = (document.getElementById('newBookTitle') as HTMLInputElement).value;
     const yearPublished = Number((document.getElementById('newBookYear') as HTMLInputElement).value);
     const price = Number((document.getElementById('newBookPrice') as HTMLInputElement).value);
+    const book_image = (document.getElementById('newBookImageUrl') as HTMLInputElement).value;
 
     if (!title || isNaN(yearPublished) || isNaN(price) || !authorId) {
       alert("Veuillez remplir tous les champs correctement.");
@@ -106,7 +107,8 @@ const AuthorDetailPage: React.FC = () => {
       yearPublished,
       price,
       authorId,
-      average: 1
+      book_image,
+      averageRating: 0,
     };
 
     try {
@@ -115,7 +117,7 @@ const AuthorDetailPage: React.FC = () => {
       setAddBookModalOpen(false);
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        console.error('Error adding book:', error.response?.data || error.message);
+        console.error('Error adding book:', error);
       } else if (error instanceof Error) {
         console.error('Error adding book:', error.message);
       } else {
@@ -183,6 +185,8 @@ const AuthorDetailPage: React.FC = () => {
             <input type="number" id="newBookYear" style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} className="border p-2 w-full rounded" />
             <label htmlFor="newBookPrice">Prix</label>
             <input type="number" id="newBookPrice" style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} className="border p-2 w-full rounded" />
+            <label htmlFor="newBookImageUrl">URL de l'image</label>
+            <input type="text" id="newBookImageUrl" style={{ display: 'block', marginBottom: '20px', marginTop: '10px' }} className="border p-2 w-full rounded" />
           </div>
           <Button variant="contained" color="primary" onClick={handleAddBook} sx={{ mt: 2 }}>
             Ajouter

@@ -15,12 +15,11 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onAddBook,
   const [publication_date, setPublicationDate] = useState('');
   const [author, setAuthor] = useState('');
   const yearPublished = new Date(publication_date).getFullYear();
-  const [image, setImage] = useState<File | null>(null);
+  const [imageURL, setImageURL] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const imageURL = image ? URL.createObjectURL(image) : '';
     const authorId = authors.find((a) => `${a.firstName} ${a.lastName}` === author)?.id;
 
     if (authorId) {
@@ -48,8 +47,7 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onAddBook,
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="border p-2 w-full rounded"
-            />
+              className="border p-2 w-full rounded" />
           </div>
           <div className="mb-4">
             <label htmlFor="publication_date" className="block mb-2">Date de publication</label>
@@ -58,8 +56,7 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onAddBook,
               id="publication_date"
               value={publication_date}
               onChange={(e) => setPublicationDate(e.target.value)}
-              className="border p-2 w-full rounded"
-            />
+              className="border p-2 w-full rounded" />
           </div>
           <div className="mb-4">
             <label htmlFor="author" className="block mb-2">Auteur</label>
@@ -78,14 +75,13 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onAddBook,
             </select>
           </div>
           <div className="mb-4">
-            <label htmlFor="image" className="block mb-2">Image du livre</label>
+            <label htmlFor="imageURL" className="block mb-2">URL de l'image du livre</label>
             <input
-              type="file"
-              id="image"
-              accept="image/*"
-              onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
-              className="border p-2 w-full rounded"
-            />
+              type="text"
+              id="imageURL"
+              value={imageURL}
+              onChange={(e) => setImageURL(e.target.value)}
+              className="border p-2 w-full rounded" />
           </div>
           <div className="flex justify-between">
             <button type="button" onClick={onClose} className="bg-gray-300 p-2 rounded">

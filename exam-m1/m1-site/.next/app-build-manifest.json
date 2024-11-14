@@ -23,6 +23,11 @@
       "static/chunks/main-app.js",
       "static/chunks/app/pages/books/[id]/page.js"
     ],
+    "/pages/authors/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/pages/authors/page.js"
+    ],
     "/pages/authors/[id]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",

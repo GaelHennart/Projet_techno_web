@@ -87,32 +87,6 @@ const BookDetailPage: React.FC = () => {
     }
   };
 
-  const handleEditBook = async () => {
-    const title = (document.getElementById('editBookTitle') as HTMLInputElement).value;
-    const yearPublished = Number((document.getElementById('editBookYear') as HTMLInputElement).value);
-    const price = Number((document.getElementById('editBookPrice') as HTMLInputElement).value);
-
-    if (!title || isNaN(yearPublished) || isNaN(price)) {
-      alert("Veuillez remplir tous les champs correctement.");
-      return;
-    }
-
-    const updatedBook = {
-      title,
-      yearPublished,
-      price,
-      authorId: book?.authorId || "",  // Assume authorId is already set
-    };
-
-    try {
-      const response = await axios.put(`http://localhost:3001/books/${bookId}`, updatedBook);
-      setBook(response.data);
-      setEditBookModalOpen(false);
-    } catch (error) {
-      console.error('Error updating book:', error);
-    }
-  };
-
   const handleAddReview = async () => {
     if (!rating) {
       alert("Veuillez sélectionner une note.");
@@ -138,7 +112,7 @@ const BookDetailPage: React.FC = () => {
       setComment(''); // Réinitialiser le commentaire
       setDate(''); // Réinitialiser la date
       // Optionnellement, vous pouvez récupérer à nouveau les avis pour mettre à jour l'interface
-      const response = await axios.get(`http://localhost:3001/reviews?bookId=${bookId}`);
+      const response = await axios.get(`http://localhost:3001/reviews/book/${bookId}`);
       setReviews(response.data); // Mettre à jour les avis
       // Recalculer la moyenne après ajout du nouvel avis
       const totalRating = response.data.reduce((sum: number, review: { mark: any; }) => sum + review.mark, 0);
@@ -154,6 +128,13 @@ const BookDetailPage: React.FC = () => {
 
   return (
     <div style={{ textAlign: 'center', padding: '20px' }}>
+      {book.book_image && (
+        <>
+          <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
+            <img src={book.book_image} style={{ width: '200px', height: 'auto', borderRadius: '10px' }} />
+          </div>
+        </>
+      )}
       <Typography variant="h4" gutterBottom>{book.title}</Typography>
       <div className="flex flex-col justify-between h-20">
         <p className="text-lg text-gray-600" style={{ fontFamily: 'Pacifico, cursive' }}>
@@ -174,14 +155,11 @@ const BookDetailPage: React.FC = () => {
 
       {/* Affichage de la moyenne des avis */}
       <Typography variant="body1" style={{ marginBottom: '20px' }}>
-        Moyenne des avis: {averageRating.toFixed(1)} / 5
+      Moyenne des avis: {isNaN(averageRating) ? 'Pas encore d\'avis' : averageRating.toFixed(1)} / 5
       </Typography>
 
       <Button variant="contained" color="secondary" onClick={() => setDeleteBookModalOpen(true)} style={{ margin: '10px' }}>
         Supprimer le livre
-      </Button>
-      <Button variant="contained" color="primary" onClick={() => setEditBookModalOpen(true)} style={{ margin: '10px' }}>
-        Modifier le livre
       </Button>
       <Button variant="contained" color="inherit" onClick={() => setReviewModalOpen(true)} style={{ margin: '10px' }}>
         Ajouter un avis
@@ -222,44 +200,6 @@ const BookDetailPage: React.FC = () => {
           </div>
         </Box>
       </Drawer>
-
-      {/* Modal for editing book */}
-      <Modal
-        open={editBookModalOpen}
-        onClose={() => setEditBookModalOpen(false)}
-        aria-labelledby="edit-book-modal"
-        aria-describedby="edit-book-description"
-      >
-        <Box sx={modalStyle}>
-          <Typography variant="h6" gutterBottom>Modifier le livre</Typography>
-          <TextField
-            id="editBookTitle"
-            label="Titre"
-            defaultValue={book.title}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            id="editBookYear"
-            label="Année de publication"
-            defaultValue={book.yearPublished}
-            fullWidth
-            margin="normal"
-            type="number"
-          />
-          <TextField
-            id="editBookPrice"
-            label="Prix"
-            defaultValue={book.price}
-            fullWidth
-            margin="normal"
-            type="number"
-          />
-          <Button onClick={handleEditBook} variant="contained" color="primary" style={{ marginTop: '20px' }}>
-            Enregistrer
-          </Button>
-        </Box>
-      </Modal>
 
       {/* Modal for deleting book */}
       <Modal

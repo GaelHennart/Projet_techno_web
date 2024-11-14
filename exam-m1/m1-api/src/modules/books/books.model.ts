@@ -6,6 +6,7 @@ export interface Book {
   yearPublished: number;
   price: number;
   authorId: string;
-  average: number;
+  averageRating: number;
   author?: Author;
+  book_image?: string;
 }

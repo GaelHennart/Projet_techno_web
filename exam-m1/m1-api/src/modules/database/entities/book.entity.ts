@@ -23,11 +23,14 @@ export class BookEntity extends BaseEntity {
   @Column({ name: 'year_published', type: 'int' })
   yearPublished: number;
 
-  @Column({ name: 'average', type: 'float' })
+  @Column({ name: 'average', type: 'float', nullable: true })
   average: number;
 
   @Column({ name: 'price', type: 'int', nullable: true })
   price: number;
+
+  @Column({ name: 'book_image', type: 'varchar', nullable: true })
+  book_image: string;
 
   @ManyToOne(() => AuthorEntity, (author) => author.books, { nullable: false, onDelete: 'CASCADE', eager: true })
   @JoinColumn({ name: 'author' })
@@ -35,4 +38,6 @@ export class BookEntity extends BaseEntity {
 
   @OneToMany(() => ReviewEntity, (review) => review.book)
   reviews: ReviewEntity[];
+
+
 }

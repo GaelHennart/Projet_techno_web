@@ -32,10 +32,6 @@ export class BooksRepository {
     return this.bookRepository.save(book);
   }
 
-  public async update(id: string, bookData: Partial<BookEntity>) {
-    return this.bookRepository.update(id, bookData);
-  }
-
   public async remove(id: string) {
     return this.bookRepository.delete(id);
   }

@@ -5,14 +5,14 @@ import SearchBar from '../../Components/SearchBar';
 import AddBookModal from '../../Components/Books/BookModal';
 import { Book } from '../../../../../m1-api/src/modules/books/books.model';
 import axios from 'axios';
-import BookSorter from '../../Components/Books/BookSorter'; // Import BookSorter
+import BookSorter from '../../Components/Books/BookSorter';
 
 const BooksPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [books, setBooks] = useState<Book[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Initial loading of books from the API
+  // Initial loading of books from the API with average ratings
   useEffect(() => {
     const fetchBooks = async () => {
       try {
@@ -25,7 +25,7 @@ const BooksPage: React.FC = () => {
               ? reviews.reduce((sum: number, review: any) => sum + review.mark, 0) / reviews.length
               : 0;
 
-            return { ...book, averageRating };
+            return { ...book, averageRating }; // Add averageRating property to each book
           })
         );
         setBooks(booksWithRatings);
@@ -73,7 +73,7 @@ const BooksPage: React.FC = () => {
 
       {/* Book Sorter */}
       <div className="w-full max-w-md mx-auto mt-4">
-        <BookSorter books={filteredBooks} onSort={handleSort} /> {/* Pass filtered books to BookSorter */}
+        <BookSorter books={filteredBooks} onSort={handleSort} />
       </div>
 
       {/* Message if no books found */}
@@ -93,12 +93,11 @@ const BooksPage: React.FC = () => {
       <div className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 justify-items-center">
         {filteredBooks.map((book) => (
           <div key={book.id} className="flex flex-col items-center">
-            {/* Passer la moyenne des avis à BookItem */}
-            <BookItem book={book} averageRating={book.average} />
+            {/* Pass the average rating to BookItem */}
+            <BookItem book={book} averageRating={book.averageRating} />
           </div>
         ))}
       </div>
-
 
       {/* Add Book Modal */}
       <AddBookModal

@@ -18,6 +18,7 @@ export default function RootLayout({
         <Navbar />
         <main className="flex-grow p-4">
           {children} {/* Affiche le contenu de la page ici */}
+
         </main>
       </body>
     </html>

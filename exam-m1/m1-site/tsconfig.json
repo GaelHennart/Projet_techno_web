@@ -29,7 +29,7 @@
   "include": [
     "src",
     ".next/types/**/*.ts"
-  ],
+, "../m1-api/Types.tsx"  ,"next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": [
     "node_modules"
   ]

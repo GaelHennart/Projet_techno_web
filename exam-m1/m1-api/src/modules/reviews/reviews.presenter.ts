@@ -6,7 +6,7 @@ export class ReviewPresenter {
       id: review.id,
       reviews_description: review.reviews_description,
       mark: review.mark,
-      createdAt: review.createdAt,
+      date: review.date,
       bookId: review.bookId,
     };
   }

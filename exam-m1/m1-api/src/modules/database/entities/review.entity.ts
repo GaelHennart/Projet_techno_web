@@ -20,8 +20,8 @@ import {
     @Column({ name: 'mark', type: 'float' })
     mark: number;
     
-    @Column({ name: 'created_at', type: 'varchar' })
-    created_at: string;
+    @Column({ name: 'date', type: 'varchar' })
+    date: string;
 
   
     @ManyToOne(() => BookEntity, (book) => book.reviews, { nullable: false, onDelete: 'CASCADE' })

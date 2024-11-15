@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { Button, Modal, Typography, Box } from '@mui/material';
 import axios from 'axios';
 import { Book } from '../../../../../../m1-api/src/modules/books/books.model';
+import ButtonItem from '../../../Components/ButtonCard';
+
 
 const modalStyle = {
   position: 'absolute' as 'absolute',
@@ -143,7 +145,7 @@ const AuthorDetailPage: React.FC = () => {
     <div style={{ textAlign: 'center', padding: '20px' }}>
       {author.imageUrl && (
         <>
-          <Typography variant="h4" gutterBottom>{`${author.firstName} ${author.lastName}`}</Typography>
+        <Typography variant="h4" gutterBottom>{`${author.firstName} ${author.lastName}`}</Typography>
           <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
             <img src={author.imageUrl} alt={`${author.firstName} ${author.lastName}`} style={{ width: '200px', height: 'auto', borderRadius: '10px' }} />
           </div>
@@ -156,25 +158,16 @@ const AuthorDetailPage: React.FC = () => {
           books.map((book) => (
             <li key={book.id} style={{ marginBottom: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <a href={`/pages/books/${book.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>{book.title}</a> - {book.yearPublished} - ${book.price}
-              <Button variant="contained" color="error" onClick={() => setDeleteBookModalOpen(book.id)} style={{ marginLeft: '10px' }}>
-                Supprimer
-              </Button>
+              <ButtonItem text="Supprimer" onClick={() => setDeleteBookModalOpen(book.id)} borderColor="#F50F35" />
             </li>
           ))
         ) : (
           <Typography variant="body1">Aucun livre disponible</Typography>
         )}
       </ul>
-      
-      <Button variant="contained" color="primary" onClick={() => setAddBookModalOpen(true)} style={{ margin: '10px' }}>
-        Ajouter un livre
-      </Button>
-      <Button variant="contained" color="secondary" onClick={() => setDeleteAuthorModalOpen(true)} style={{ margin: '10px' }}>
-        Supprimer l'auteur
-      </Button>
-      <Button variant="contained" color="primary" onClick={() => setEditAuthorModalOpen(true)} style={{ margin: '10px' }}>
-        Modifier l'auteur
-      </Button>
+      <ButtonItem text="Ajouter un livre" onClick={() => setAddBookModalOpen(true)} borderColor="#3a86ff" />
+      <ButtonItem text="Supprimer l'auteur" onClick={() => setDeleteAuthorModalOpen(true)} borderColor="#F50F35" /> 
+      <ButtonItem text="Modifier l'auteur" onClick={() => setEditAuthorModalOpen(true)} borderColor="#3a86ff" />   
       <Modal open={addBookModalOpen} onClose={() => setAddBookModalOpen(false)}>
         <Box sx={modalStyle}>
           <Typography variant="h6" gutterBottom>Ajouter un nouveau livre</Typography>

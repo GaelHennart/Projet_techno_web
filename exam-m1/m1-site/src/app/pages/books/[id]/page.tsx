@@ -6,6 +6,7 @@ import { Button, Modal, Typography, Box, TextField, Rating, Drawer, IconButton }
 import axios from 'axios';
 import { Book } from '../../../../../../m1-api/src/modules/books/books.model';
 import SortIcon from '@mui/icons-material/Sort';
+import ButtonItem from '../../../Components/ButtonCard';
 
 const modalStyle = {
   position: 'absolute' as 'absolute',
@@ -24,7 +25,6 @@ const BookDetailPage: React.FC = () => {
 
   const [book, setBook] = useState<Book | null>(null);
   const [reviews, setReviews] = useState<any[]>([]); // State to store reviews
-  const [editBookModalOpen, setEditBookModalOpen] = useState(false);
   const [deleteBookModalOpen, setDeleteBookModalOpen] = useState(false);
   const [reviewModalOpen, setReviewModalOpen] = useState(false); // Modal to add review
   const [rating, setRating] = useState<number | null>(null); // Rating (1 to 5)
@@ -69,8 +69,8 @@ const BookDetailPage: React.FC = () => {
   // Sort reviews by date
   const sortedReviews = reviews
     .sort((a, b) => {
-      const dateA = new Date(a.createdAt).getTime();
-      const dateB = new Date(b.createdAt).getTime();
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
       return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
     });
 
@@ -102,7 +102,7 @@ const BookDetailPage: React.FC = () => {
       mark: rating,
       reviews_description: comment || '', // Si aucun commentaire n'est fourni, on envoie une chaîne vide
       bookId: bookId, // Le bookId est déjà défini
-      createdAt: new Date(date), // Passer la date sélectionnée
+      date: date, // Date entrée par l'utilisateur
     };
 
     try {
@@ -157,16 +157,9 @@ const BookDetailPage: React.FC = () => {
       <Typography variant="body1" style={{ marginBottom: '20px' }}>
       Moyenne des avis: {isNaN(averageRating) ? 'Pas encore d\'avis' : averageRating.toFixed(1)} / 5
       </Typography>
-
-      <Button variant="contained" color="secondary" onClick={() => setDeleteBookModalOpen(true)} style={{ margin: '10px' }}>
-        Supprimer le livre
-      </Button>
-      <Button variant="contained" color="inherit" onClick={() => setReviewModalOpen(true)} style={{ margin: '10px' }}>
-        Ajouter un avis
-      </Button>
-      <Button variant="contained" color="info" onClick={() => setDrawerOpen(true)} style={{ margin: '10px' }}>
-        Voir les avis
-      </Button>
+      <ButtonItem text="Supprimer le livre" onClick={() => setDeleteBookModalOpen(true)} borderColor="#F50F35" />    
+      <ButtonItem text="Ajouter un avis" onClick={() => setReviewModalOpen(true)} borderColor="#3a86ff" />    
+      <ButtonItem text="Voir les avis" onClick={() => setDrawerOpen(true)} borderColor="#3a86ff" />    
 
       {/* Drawer for reviews */}
       <Drawer
@@ -190,7 +183,7 @@ const BookDetailPage: React.FC = () => {
                     {review.reviews_description}
                   </Typography>
                   <Typography variant="body2" color="textSecondary">
-                    {new Date(review.createdAt).toLocaleDateString()}
+                    le : {review.date}
                   </Typography>
                 </Box>
               ))
@@ -247,8 +240,7 @@ const BookDetailPage: React.FC = () => {
             onChange={(e) => setComment(e.target.value)}
           />
           <TextField
-            label="Date de l'avis"
-            type="string"
+            type="date"
             fullWidth
             margin="normal"
             value={date}

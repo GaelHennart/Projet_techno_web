@@ -17,13 +17,17 @@ export class CreateReviewDto {
   
   @IsOptional()
   @IsString()
-  created_at: string;
+  date: string;
 }
 
 export class UpdateReviewDto {
   @IsOptional()
   @IsString()
   reviews_description?: string;
+
+  @IsOptional()
+  @IsString()
+  date?: string;
 
   @IsOptional()
   @IsNumber()

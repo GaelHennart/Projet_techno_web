@@ -6,6 +6,7 @@ import AddBookModal from '../../Components/Books/BookModal';
 import { Book } from '../../../../../m1-api/src/modules/books/books.model';
 import axios from 'axios';
 import BookSorter from '../../Components/Books/BookSorter';
+import ButtonItem from '../../Components/ButtonCard';
 
 const BooksPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -86,23 +87,18 @@ const BooksPage: React.FC = () => {
         <SearchBar onSearch={handleSearch} />
       </div>
 
-      {/* Tri des livres */}
-      <div className="w-full max-w-md mx-auto mt-4">
-        <BookSorter books={filteredBooks} onSort={handleSort} />
-      </div>
-
       {/* Message si aucun livre n'est trouvé */}
       {filteredBooks.length === 0 && searchTerm && (
         <p className="text-black mt-4 text-center">Aucun livre trouvé pour "{searchTerm}"</p>
       )}
-
+      
+      {/* Tri des livres */}
+      <div className="w-full max-w-md mx-auto mt-4">
+        <BookSorter books={filteredBooks} onSort={handleSort} />
+      </div>
+      
       {/* Bouton pour ajouter un livre */}
-      <button
-        onClick={toggleModal}
-        className="bg-blue-500 text-white p-2 rounded mt-4"
-      >
-        Ajouter un livre
-      </button>
+      <ButtonItem text="Ajouter un livre"  onClick={toggleModal} borderColor="#3a86ff" />
 
       {/* Liste des livres */}
       <div className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 justify-items-center">

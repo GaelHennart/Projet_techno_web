@@ -5,6 +5,7 @@ import SearchBar from '../../Components/SearchBar';
 import AddAuthorModal from '../../Components/Authors/AuthorModale';
 import { Author } from '../../../../../m1-api/src/modules/authors/author.model';
 import axios from 'axios';
+import ButtonItem from '../../Components/ButtonCard';
 
 const AuthorsPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -61,12 +62,7 @@ const AuthorsPage: React.FC = () => {
       )}
 
       {/* Bouton pour ajouter un auteur */}
-      <button
-        onClick={toggleModal}
-        className="bg-blue-500 text-white p-2 rounded mt-4"
-      >
-        Ajouter un auteur
-      </button>
+      <ButtonItem text="Ajouter un auteur"  onClick={toggleModal} borderColor="#3a86ff" />
 
       {/* Liste des auteurs */}
       <div className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 justify-items-center">

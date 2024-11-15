@@ -9,7 +9,7 @@ export class AuthorPresenter {
       imageUrl: author.imageUrl,
       biography: author.biography,
       bookCount: author.books?.length || 0,
-      averageRating: author.books?.reduce((sum, book) => sum + (book.average || 0), 0) / (author.books?.length || 1),
+      averageRating: author.books?.filter(book => book.average > 0).reduce((sum, book) => sum + book.average, 0) / (author.books?.filter(book => book.average > 0).length || 1)
     };
   }
 }
